@@ -1,0 +1,407 @@
+[
+    {
+        "id": "csv-upload",
+        "type": "tab",
+        "label": "CSV Upload",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "81ce24020caa50c7",
+        "type": "csv",
+        "z": "csv-upload",
+        "name": "Parse CSV",
+        "sep": ",",
+        "hdrin": true,
+        "multi": "mult",
+        "temp": "",
+        "skip": 0,
+        "strings": true,
+        "include_empty_strings": false,
+        "include_null_values": false,
+        "x": 530,
+        "y": 140,
+        "wires": [
+            [
+                "ready_next"
+            ]
+        ]
+    },
+    {
+        "id": "96d0299c874c7765",
+        "type": "link out",
+        "z": "csv-upload",
+        "name": "TO Ingest",
+        "links": [
+            "af1f1c097dd12835"
+        ],
+        "x": 1125,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "479631dcf031492d",
+        "type": "chunks-to-lines",
+        "z": "csv-upload",
+        "name": "",
+        "nbLines": "4096",
+        "linesFormat": "csv",
+        "decoder": "UTF-8",
+        "x": 300,
+        "y": 140,
+        "wires": [
+            [
+                "81ce24020caa50c7",
+                "29a1a2d6eb0b2cac"
+            ]
+        ]
+    },
+    {
+        "id": "5bc67460d5eac237",
+        "type": "ui_upload",
+        "z": "csv-upload",
+        "group": "uiCsvGrp",
+        "title": "Select CSV",
+        "accept": "",
+        "name": "",
+        "order": 1,
+        "width": 6,
+        "height": 6,
+        "chunk": "256",
+        "transfer": "binary",
+        "x": 110,
+        "y": 140,
+        "wires": [
+            [
+                "479631dcf031492d",
+                "80112148ed6ed2ad"
+            ]
+        ]
+    },
+    {
+        "id": "6046f530f062ceb2",
+        "type": "comment",
+        "z": "csv-upload",
+        "name": "CSV Upload",
+        "info": "Unified ingestion path for edge devices",
+        "x": 130,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "debug_done",
+        "type": "debug",
+        "z": "csv-upload",
+        "name": "Done",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "complete",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "29a1a2d6eb0b2cac",
+        "type": "ui_text",
+        "z": "csv-upload",
+        "group": "uiCsvGrp",
+        "order": 2,
+        "width": "",
+        "height": "",
+        "name": "",
+        "label": "Lines uploaded:",
+        "format": "{{msg._parts.lines}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 560,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "ready_next",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Ready for next lines",
+        "func": "// pass the whole chunk\n// always send tick to unlock next slice\n\nreturn [\n    msg,\n    { tick:true }\n];",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 140,
+        "wires": [
+            [
+                "debug_done",
+                "289077c16b977cb2"
+            ],
+            [
+                "479631dcf031492d"
+            ]
+        ]
+    },
+    {
+        "id": "289077c16b977cb2",
+        "type": "split",
+        "z": "csv-upload",
+        "name": "",
+        "splt": "",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "property": "payload",
+        "x": 1010,
+        "y": 100,
+        "wires": [
+            [
+                "96d0299c874c7765"
+            ]
+        ]
+    },
+    {
+        "id": "6ff66478151d6ae9",
+        "type": "trigger",
+        "z": "csv-upload",
+        "name": "Flush DB after 2 hours",
+        "op1": "",
+        "op2": "flush",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "60",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "s",
+        "reset": "\"new upload\"",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 840,
+        "y": 380,
+        "wires": [
+            [
+                "2675bfea39c70def"
+            ]
+        ]
+    },
+    {
+        "id": "df1272b6571efdb7",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Config DB flushing",
+        "func": "msg.payload = \"new upload\"\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 380,
+        "wires": [
+            [
+                "6ff66478151d6ae9"
+            ]
+        ]
+    },
+    {
+        "id": "be99dac8a4dbb5ba",
+        "type": "postgresql",
+        "z": "csv-upload",
+        "name": "Truncate",
+        "query": "TRUNCATE sensor_data, ingestion_metrics, sensor_errors RESTART IDENTITY;",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 1080,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f59e90b325dc7cfd",
+        "type": "ui_toast",
+        "z": "csv-upload",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "#fffff",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Send notification",
+        "x": 820,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "1afe30f259bbc1f5",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Config upload notification ",
+        "func": "msg.payload = \"Data uploaded successfully!\"\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 300,
+        "wires": [
+            [
+                "f59e90b325dc7cfd"
+            ]
+        ]
+    },
+    {
+        "id": "80112148ed6ed2ad",
+        "type": "delay",
+        "z": "csv-upload",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 290,
+        "y": 300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3483da2f337f4f2a",
+        "type": "ui_toast",
+        "z": "csv-upload",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "#fffff",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "className": "",
+        "topic": "",
+        "name": "Send notification",
+        "x": 1100,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "57e7f7cb143dcb35",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Config upload notification ",
+        "func": "msg.payload = \"Databased flushed on timer!\"\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 540,
+        "wires": [
+            [
+                "3483da2f337f4f2a"
+            ]
+        ]
+    },
+    {
+        "id": "2675bfea39c70def",
+        "type": "delay",
+        "z": "csv-upload",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 870,
+        "y": 460,
+        "wires": [
+            [
+                "be99dac8a4dbb5ba",
+                "57e7f7cb143dcb35"
+            ]
+        ]
+    },
+    {
+        "id": "uiCsvGrp",
+        "type": "ui_group",
+        "name": "Upload",
+        "tab": "uiCsvTab",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "fbd14997310e037a",
+        "type": "postgreSQLConfig",
+        "name": "",
+        "host": "postgres",
+        "hostFieldType": "str",
+        "port": "5432",
+        "portFieldType": "num",
+        "database": "postgres",
+        "databaseFieldType": "str",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": "10",
+        "maxFieldType": "num",
+        "idle": "1000",
+        "idleFieldType": "num",
+        "connectionTimeout": "10000",
+        "connectionTimeoutFieldType": "num",
+        "user": "postgres",
+        "userFieldType": "str",
+        "password": "05JD£AEBW2'f",
+        "passwordFieldType": "str"
+    },
+    {
+        "id": "uiCsvTab",
+        "type": "ui_tab",
+        "name": "CSV Upload",
+        "icon": "cloud_upload",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
