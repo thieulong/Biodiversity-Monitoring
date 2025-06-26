@@ -8,7 +8,7 @@ services:
       - "5432:5432"
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+      POSTGRES_PASSWORD: "05JD£AEBW2'f"
     volumes: 
       - "./postgres-16-data:/var/lib/postgresql/data"
 #      - "./postgres-home:/home"
@@ -45,8 +45,8 @@ services:
     environment:
       # increases the log level from info to debug
       #- GF_LOG_LEVEL=debug
-      GF_SECURITY_ADMIN_USER: $GRAFANA_USER
-      GF_SECURITY_ADMIN_PASSWORD: $GRAFANA_PASSWORD
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "0m{-}>7nP8)C"
     ports:
       - '3000:3000'
     volumes:
