@@ -1,0 +1,55 @@
+networks:
+    digi_pkg:
+
+services:
+  postgres:
+    image: timescale/timescaledb-ha:pg16
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
+    volumes: 
+      - "./postgres-16-data:/var/lib/postgresql/data"
+#      - "./postgres-home:/home"
+    networks:
+      - digi_pkg
+  
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - "./mosquitto-data:/mosquitto"
+    networks:
+      - digi_pkg
+  
+  nodered:
+    image: nodered/node-red
+    ports:
+      - "1880:1880"
+    restart: unless-stopped
+    volumes:
+      - "./nodered-data:/data"
+    environment:
+      NODE_RED_ENABLE_SAFE_MODE: "false"
+    networks:
+      - digi_pkg
+   
+  grafana:
+    image: grafana/grafana-oss
+    user: "1000:1000"
+    restart: unless-stopped
+    environment:
+      # increases the log level from info to debug
+      #- GF_LOG_LEVEL=debug
+      GF_SECURITY_ADMIN_USER: $GRAFANA_USER
+      GF_SECURITY_ADMIN_PASSWORD: $GRAFANA_PASSWORD
+    ports:
+      - '3000:3000'
+    volumes:
+      - './grafana-data:/var/lib/grafana'
+    networks:
+      - digi_pkg

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Biodiversity Dashboard Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background: #181c20;
+            color: #f5f6fa;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 420px;
+            margin: 60px auto;
+            background: #21232a;
+            border-radius: 20px;
+            box-shadow: 0 10px 32px #0006, 0 2px 8px #0001;
+            padding: 38px 32px 32px 32px;
+        }
+        h1 {
+            font-size: 2.1em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-align: center;
+            color: #54a0ff;
+        }
+        .icon {
+            font-size: 2.4em;
+            display: block;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .instructions {
+            background: #232836;
+            border-radius: 8px;
+            color: #b9f6ca;
+            font-size: 1.08em;
+            margin-bottom: 20px;
+            padding: 13px 17px 13px 22px;
+            box-shadow: 0 1px 4px #0002;
+        }
+        .note {
+            font-size: 1em;
+            background: #26283a;
+            color: #ffe47a;
+            border-radius: 8px;
+            padding: 13px 17px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 1px 4px #0002;
+        }
+        .btn {
+            display: block;
+            margin: 23px auto;
+            padding: 16px 0;
+            width: 100%;
+            background: linear-gradient(90deg, #2e86de, #48dbfb);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.18em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.18s, box-shadow 0.18s;
+            box-shadow: 0 2px 8px #2e86de22;
+            outline: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: linear-gradient(90deg, #1b4f72, #0097a7);
+            box-shadow: 0 4px 18px #48dbfb44;
+        }
+        .footer {
+            text-align: center;
+            font-size: 0.98em;
+            color: #555d66;
+            margin-top: 32px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 6vw;
+                max-width: 99vw;
+            }
+            h1 { font-size: 1.35em;}
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <span class="icon">🌿</span>
+    <h1>Biodiversity Dashboard</h1>
+    <div class="instructions">
+        <strong>How to use:</strong>
+        <ol style="margin: 10px 0 0 16px; color: #b9f6ca;">
+            <li>Click <b>Upload / Flush CSV Data</b> to upload your CSV file or clear previous data.</li>
+            <li>Once uploaded, click <b>View Grafana Dashboard</b> to explore and visualize your data.</li>
+            <li>If needed, return to the first step to upload new data or flush the database.</li>
+        </ol>
+    </div>
+    <div class="note" style="text-align:left;">
+    <b>Note:</b><br>
+    &nbsp;&nbsp;• Data is <b>shared</b>; flushing/resetting will affect all users.<br>
+    &nbsp;&nbsp;• Data is auto-cleared every 6 hours.
+    </div>
+    <a class="btn" href="http://localhost:1880/ui/" target="_blank">Upload / Flush CSV Data</a>
+    <a class="btn" href="http://localhost:3000/d/ce9iy4q6qr474f/dashboard-demo" target="_blank">View Grafana Dashboard</a>
+  </div>
+  <div class="footer">
+    &copy; 2025 Biodiversity Monitoring | <span style="color:#888;">For demo purposes</span>
+  </div>
+</body>
+</html>
