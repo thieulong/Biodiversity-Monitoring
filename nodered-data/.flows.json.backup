@@ -614,51 +614,6 @@
         ]
     },
     {
-        "id": "6ff66478151d6ae9",
-        "type": "trigger",
-        "z": "csv-upload",
-        "name": "Flush DB after 2 hours",
-        "op1": "",
-        "op2": "flush",
-        "op1type": "str",
-        "op2type": "str",
-        "duration": "15",
-        "extend": true,
-        "overrideDelay": false,
-        "units": "s",
-        "reset": "\"new upload\"",
-        "bytopic": "all",
-        "topic": "topic",
-        "outputs": 1,
-        "x": 840,
-        "y": 380,
-        "wires": [
-            [
-                "2675bfea39c70def"
-            ]
-        ]
-    },
-    {
-        "id": "df1272b6571efdb7",
-        "type": "function",
-        "z": "csv-upload",
-        "name": "Config DB flushing",
-        "func": "msg.payload = \"new upload\"\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 550,
-        "y": 380,
-        "wires": [
-            [
-                "6ff66478151d6ae9"
-            ]
-        ]
-    },
-    {
         "id": "be99dac8a4dbb5ba",
         "type": "postgresql",
         "z": "csv-upload",
@@ -668,8 +623,8 @@
         "split": false,
         "rowsPerMsg": "",
         "outputs": 1,
-        "x": 1080,
-        "y": 380,
+        "x": 1060,
+        "y": 340,
         "wires": [
             []
         ]
@@ -689,8 +644,8 @@
         "className": "",
         "topic": "",
         "name": "Send notification",
-        "x": 820,
-        "y": 300,
+        "x": 800,
+        "y": 280,
         "wires": []
     },
     {
@@ -705,11 +660,13 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 570,
-        "y": 300,
+        "x": 530,
+        "y": 340,
         "wires": [
             [
-                "f59e90b325dc7cfd"
+                "f59e90b325dc7cfd",
+                "6ff66478151d6ae9",
+                "cc6e3a43dca1be1d"
             ]
         ]
     },
@@ -731,16 +688,102 @@
         "allowrate": false,
         "outputs": 1,
         "x": 290,
-        "y": 300,
+        "y": 340,
         "wires": [
             [
-                "1afe30f259bbc1f5",
-                "df1272b6571efdb7"
+                "1afe30f259bbc1f5"
             ]
         ]
     },
     {
-        "id": "3483da2f337f4f2a",
+        "id": "6ff66478151d6ae9",
+        "type": "trigger",
+        "z": "csv-upload",
+        "name": "Flush DB after 10 minutes",
+        "op1": "",
+        "op2": "flush",
+        "op1type": "str",
+        "op2type": "str",
+        "duration": "10",
+        "extend": true,
+        "overrideDelay": false,
+        "units": "min",
+        "reset": "\"Data uploaded successfully!\"",
+        "bytopic": "all",
+        "topic": "topic",
+        "outputs": 1,
+        "x": 830,
+        "y": 340,
+        "wires": [
+            [
+                "be99dac8a4dbb5ba",
+                "b4aee4421d7109e7"
+            ]
+        ]
+    },
+    {
+        "id": "1e46096e51f331d7",
+        "type": "ui_text",
+        "z": "csv-upload",
+        "group": "uiCsvGrp",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Data will be cleared in:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 1020,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "cc6e3a43dca1be1d",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "DB flush timer",
+        "func": "let duration = 600; \nif (msg.duration) duration = msg.duration;\n\nlet timer = context.get('timer');\n\nif (msg.payload === \"Data uploaded successfully!\") {\n    if (timer) clearTimeout(timer);\n    msg.payload = formatTime(duration);\n    node.send(msg);\n    tick(duration - 1);\n    return null;\n}\n\nif (timer) clearTimeout(timer);\n\nfunction formatTime(seconds) {\n    let hrs = Math.floor(seconds / 3600);\n    let mins = Math.floor((seconds % 3600) / 60);\n    let secs = seconds % 60;\n    return (\n        String(hrs).padStart(2, '0') + ':' +\n        String(mins).padStart(2, '0') + ':' +\n        String(secs).padStart(2, '0')\n    );\n}\n\nfunction tick(remaining) {\n    if (remaining > 0) {\n        let m = { ...msg }; \n        m.payload = formatTime(remaining);\n        node.send(m);\n        context.set('timer', setTimeout(() => tick(remaining - 1), 1000));\n    } else {\n        let m = { ...msg };\n        m.payload = \"00:00:00\";\n        node.send(m);\n        context.set('timer', null);\n    }\n}\n\ntick(duration);\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 800,
+        "y": 460,
+        "wires": [
+            [
+                "1e46096e51f331d7"
+            ]
+        ]
+    },
+    {
+        "id": "b4aee4421d7109e7",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Config flushing notification ",
+        "func": "if (msg.payload === \"flush\") {\n    msg.payload = \"Data flushed on timer!\";\n    return msg;\n}\nreturn null; \n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 400,
+        "wires": [
+            [
+                "375af98bf9700543"
+            ]
+        ]
+    },
+    {
+        "id": "375af98bf9700543",
         "type": "ui_toast",
         "z": "csv-upload",
         "position": "top right",
@@ -754,55 +797,9 @@
         "className": "",
         "topic": "",
         "name": "Send notification",
-        "x": 1100,
-        "y": 540,
+        "x": 1080,
+        "y": 400,
         "wires": []
-    },
-    {
-        "id": "57e7f7cb143dcb35",
-        "type": "function",
-        "z": "csv-upload",
-        "name": "Config upload notification ",
-        "func": "msg.payload = \"Databased flushed on timer!\"\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 850,
-        "y": 540,
-        "wires": [
-            [
-                "3483da2f337f4f2a"
-            ]
-        ]
-    },
-    {
-        "id": "2675bfea39c70def",
-        "type": "delay",
-        "z": "csv-upload",
-        "name": "",
-        "pauseType": "rate",
-        "timeout": "5",
-        "timeoutUnits": "seconds",
-        "rate": "1",
-        "nbRateUnits": "1",
-        "rateUnits": "second",
-        "randomFirst": "1",
-        "randomLast": "5",
-        "randomUnits": "seconds",
-        "drop": true,
-        "allowrate": false,
-        "outputs": 1,
-        "x": 870,
-        "y": 460,
-        "wires": [
-            [
-                "be99dac8a4dbb5ba",
-                "57e7f7cb143dcb35"
-            ]
-        ]
     },
     {
         "id": "linkOutMqtt",
@@ -1063,7 +1060,7 @@
         "type": "debug",
         "z": "db-ingestion",
         "name": "Debug Insert",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "complete": "true",
         "x": 930,
@@ -1522,7 +1519,7 @@
         "z": "admin",
         "name": "",
         "group": "uiCsvGrp",
-        "order": 2,
+        "order": 4,
         "width": 0,
         "height": 0,
         "passthru": false,
