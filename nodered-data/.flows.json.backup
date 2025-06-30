@@ -295,6 +295,7 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
+        "topic": "",
         "x": 170,
         "y": 260,
         "wires": [
@@ -353,6 +354,7 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
+        "topic": "",
         "x": 180,
         "y": 400,
         "wires": [
@@ -448,6 +450,87 @@
         "x": 670,
         "y": 540,
         "wires": []
+    },
+    {
+        "id": "aff9f54752ba0cce",
+        "type": "comment",
+        "z": "db-setup",
+        "name": "Auto-Initialize on Startup",
+        "info": "",
+        "x": 170,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "a26f8ed50a7c7138",
+        "type": "postgresql",
+        "z": "db-setup",
+        "name": "Create tables",
+        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n-- Dimension table\nCREATE TABLE IF NOT EXISTS sensors(id SERIAL PRIMARY KEY, type VARCHAR(50), location VARCHAR(50));\n-- Main data\nCREATE TABLE IF NOT EXISTS sensor_data(time TIMESTAMPTZ NOT NULL, sensor_id INTEGER, start_seconds INTEGER, end_seconds INTEGER, scientific_name VARCHAR(50), common_name VARCHAR(50), confidence DOUBLE PRECISION, FOREIGN KEY(sensor_id) REFERENCES sensors(id));\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(received_at timestamptz NOT NULL, inserted_at timestamptz NOT NULL);\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(time timestamptz DEFAULT NOW(), error_msg text NOT NULL, raw_payload jsonb);",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 410,
+        "y": 660,
+        "wires": [
+            [
+                "847ff43a584447e7"
+            ]
+        ]
+    },
+    {
+        "id": "847ff43a584447e7",
+        "type": "postgresql",
+        "z": "db-setup",
+        "name": "Create Hypertable",
+        "query": "SELECT create_hypertable('sensor_data','time', if_not_exists => TRUE);",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 610,
+        "y": 660,
+        "wires": [
+            [
+                "07f82be133f8812b"
+            ]
+        ]
+    },
+    {
+        "id": "07f82be133f8812b",
+        "type": "postgresql",
+        "z": "db-setup",
+        "name": "Insert Sensors",
+        "query": "INSERT INTO sensors(type, location) VALUES('frog-detector','AUVIC_Yirraba_11F'),('frog-detector','AUVIC_Yirraba_12A'),('frog-detector','FAKE_LOCATION_X'),('other-detector','FAKE_LOCATION_Y');",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 820,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "ddb4b66252203ba3",
+        "type": "inject",
+        "z": "db-setup",
+        "name": "Trigger: Initialization",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "x": 180,
+        "y": 660,
+        "wires": [
+            [
+                "a26f8ed50a7c7138"
+            ]
+        ]
     },
     {
         "id": "81ce24020caa50c7",

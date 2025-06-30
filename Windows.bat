@@ -26,7 +26,7 @@ echo.
 echo If the dashboard doesn't open automatically:
 echo - Open 'index.html' in this folder
 echo - Or open http://localhost:1880/ui/  (CSV upload)
-echo - Or open http://localhost:3000/      (Grafana dashboard)
+echo - Or open http://localhost:3000/     (Grafana dashboard)
 echo.
 
 pause
