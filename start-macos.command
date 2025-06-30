@@ -1,31 +1,31 @@
-#!/bin/bash
-echo "================================"
-echo "  BIODIVERSITY DASHBOARD SETUP  "
-echo "================================"
-echo
+k#!/bin/bash
+echo "==============================="
+echo "  BIODIVERSITY DASHBOARD SETUP"
+echo "==============================="
+echo ""
 
-# Check if Docker is running
-docker info > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-  echo "Docker Desktop is not running!"
-  echo "Please install and start Docker Desktop before continuing."
-  echo "Download here: https://www.docker.com/products/docker-desktop/"
-  open "https://www.docker.com/products/docker-desktop/"
-  open -a Docker
-  echo "Waiting for Docker Desktop to start..."
-  while ! docker info > /dev/null 2>&1; do sleep 1; done
+if ! command -v docker &> /dev/null
+then
+    echo "Docker Desktop is not installed or not in PATH!"
+    echo "Please install and start Docker Desktop before continuing."
+    echo "Download here: https://www.docker.com/products/docker-desktop/"
+    read -p "Press enter to exit."
+    exit
 fi
 
 echo "Starting dashboard services..."
 docker compose up -d
 
-echo
+echo ""
 echo "Dashboard services are starting!"
-echo "Your browser will open the Dashboard Start Page."
-open "$(pwd)/index.html"
-echo
-echo "If the dashboard doesn't open automatically, open 'index.html' in this folder."
-echo
+echo "Opening dashboard homepage..."
+open "index.html"
+echo ""
+echo "If the dashboard doesn't open automatically:"
+echo "- Open 'index.html' in this folder"
+echo "- Or open http://localhost:1880/ui/  (CSV upload)"
+echo "- Or open http://localhost:3000/      (Grafana dashboard)"
+echo ""
 
-# Optional: pause until Enter is pressed
-read -p "Press [Enter] to finish..."
+read -p "Press enter to exit."
+
