@@ -24,7 +24,7 @@
             font-size: 2.1em;
             font-weight: 700;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 32px;
             text-align: center;
             color: #54a0ff;
         }
@@ -43,15 +43,23 @@
             padding: 13px 17px 13px 22px;
             box-shadow: 0 1px 4px #0002;
         }
-        .note {
-            font-size: 1em;
-            background: #26283a;
-            color: #ffe47a;
-            border-radius: 8px;
-            padding: 13px 17px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 1px 4px #0002;
+        .instructions strong {
+            font-size: 1.25em;   
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0;
+        }
+        .instructions-list {
+            margin: 16px 0 0 18px;
+            color: #b9f6ca;
+            padding-left: 18px;
+        }
+        .instructions-list li {
+            margin-bottom: 18px; 
+            line-height: 1.6;     
+        }
+        .instructions-list li:last-child {
+            margin-bottom: 0;  
         }
         .btn {
             display: block;
@@ -97,15 +105,11 @@
     <h1>Biodiversity Dashboard</h1>
     <div class="instructions">
         <strong>How to use:</strong>
-        <ol style="margin: 10px 0 0 16px; color: #b9f6ca;">
+        <ol class="instructions-list">
             <li>Click <b>Upload / Flush CSV Data</b> to upload your CSV file or clear previous data.</li>
             <li>Once uploaded, click <b>View Grafana Dashboard</b> to explore and visualize your data.</li>
             <li>If needed, return to the first step to upload new data or flush the database.</li>
         </ol>
-    </div>
-    <div class="note" style="text-align:left;">
-    <b>Note:</b><br>
-    &nbsp;&nbsp;• Data is auto-cleared every 10 minutes.
     </div>
     <a class="btn" href="http://localhost:1880/ui/" target="_blank">Upload / Flush CSV Data</a>
     <a class="btn" href="http://localhost:3000/d/ce9iy4q6qr474f/dashboard-demo" target="_blank">View Grafana Dashboard</a>

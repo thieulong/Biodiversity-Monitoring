@@ -446,7 +446,12 @@
         "name": "Debug Drop",
         "active": true,
         "tosidebar": true,
+        "console": false,
+        "tostatus": false,
         "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
         "x": 670,
         "y": 540,
         "wires": []
@@ -700,6 +705,7 @@
         "id": "be99dac8a4dbb5ba",
         "type": "postgresql",
         "z": "csv-upload",
+        "d": true,
         "name": "Truncate",
         "query": "TRUNCATE sensor_data, ingestion_metrics, sensor_errors RESTART IDENTITY;",
         "postgreSQLConfig": "fbd14997310e037a",
@@ -782,6 +788,7 @@
         "id": "6ff66478151d6ae9",
         "type": "trigger",
         "z": "csv-upload",
+        "d": true,
         "name": "Flush DB after 10 minutes",
         "op1": "",
         "op2": "flush",
@@ -808,6 +815,7 @@
         "id": "1e46096e51f331d7",
         "type": "ui_text",
         "z": "csv-upload",
+        "d": true,
         "group": "uiCsvGrp",
         "order": 3,
         "width": 0,
@@ -829,6 +837,7 @@
         "id": "cc6e3a43dca1be1d",
         "type": "function",
         "z": "csv-upload",
+        "d": true,
         "name": "DB flush timer",
         "func": "let duration = 600; \nif (msg.duration) duration = msg.duration;\n\nlet timer = context.get('timer');\n\n// If CSV is uploaded: reset and start countdown\nif (msg.payload === \"Data uploaded successfully!\") {\n    if (timer) clearTimeout(timer);\n    msg.payload = formatTime(duration);\n    node.send(msg);\n    tick(duration - 1);\n    return null;\n}\n\n// If Flush button clicked: clear timer and set display to 00:00:00 (don't restart timer)\nif (msg.payload === \"Flush button clicked\") {\n    if (timer) clearTimeout(timer);\n    context.set('timer', null);\n    msg.payload = \"00:00:00\";\n    node.send(msg);\n    return null;\n}\n\n// In all other cases, clear timer and start countdown\nif (timer) clearTimeout(timer);\n\nfunction formatTime(seconds) {\n    let hrs = Math.floor(seconds / 3600);\n    let mins = Math.floor((seconds % 3600) / 60);\n    let secs = seconds % 60;\n    return (\n        String(hrs).padStart(2, '0') + ':' +\n        String(mins).padStart(2, '0') + ':' +\n        String(secs).padStart(2, '0')\n    );\n}\n\nfunction tick(remaining) {\n    if (remaining > 0) {\n        let m = { ...msg }; \n        m.payload = formatTime(remaining);\n        node.send(m);\n        context.set('timer', setTimeout(() => tick(remaining - 1), 1000));\n    } else {\n        let m = { ...msg };\n        m.payload = \"00:00:00\";\n        node.send(m);\n        context.set('timer', null);\n    }\n}\n\n// For any other trigger, start timer as before\ntick(duration);\n\nreturn null;\n",
         "outputs": 1,
@@ -849,6 +858,7 @@
         "id": "b4aee4421d7109e7",
         "type": "function",
         "z": "csv-upload",
+        "d": true,
         "name": "Config flushing notification ",
         "func": "if (msg.payload === \"flush\") {\n    msg.payload = \"Data flushed on timer!\";\n    return msg;\n}\nreturn null; \n",
         "outputs": 1,
@@ -869,6 +879,7 @@
         "id": "375af98bf9700543",
         "type": "ui_toast",
         "z": "csv-upload",
+        "d": true,
         "position": "top right",
         "displayTime": "3",
         "highlight": "#fffff",
@@ -888,6 +899,7 @@
         "id": "e873419789e132aa",
         "type": "link in",
         "z": "csv-upload",
+        "d": true,
         "name": "link in 1",
         "links": [
             "c3cce603f5005496"
@@ -897,6 +909,22 @@
         "wires": [
             [
                 "cc6e3a43dca1be1d"
+            ]
+        ]
+    },
+    {
+        "id": "a76e0b542c71a329",
+        "type": "link in",
+        "z": "csv-upload",
+        "name": "link in 2",
+        "links": [
+            "0c5e58fc67d3b1ef"
+        ],
+        "x": 365,
+        "y": 220,
+        "wires": [
+            [
+                "29a1a2d6eb0b2cac"
             ]
         ]
     },
@@ -1638,7 +1666,8 @@
             [
                 "cbfbd41bc498cf53",
                 "36c2be86efc994dc",
-                "e6fe3cf2bc32e869"
+                "e6fe3cf2bc32e869",
+                "7801f8a4d33f5d88"
             ]
         ]
     },
@@ -1699,21 +1728,43 @@
         "id": "c3cce603f5005496",
         "type": "link out",
         "z": "admin",
+        "d": true,
         "name": "TO Upload",
         "mode": "link",
         "links": [
             "e873419789e132aa"
         ],
         "x": 615,
-        "y": 360,
+        "y": 440,
         "wires": []
     },
     {
         "id": "e6fe3cf2bc32e869",
         "type": "function",
         "z": "admin",
+        "d": true,
         "name": "Reset flush timer",
         "func": "msg.payload = \"Flush button clicked\"\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 440,
+        "wires": [
+            [
+                "c3cce603f5005496"
+            ]
+        ]
+    },
+    {
+        "id": "7801f8a4d33f5d88",
+        "type": "function",
+        "z": "admin",
+        "name": "Clear line uploaded ",
+        "func": "msg._parts.lines = 0\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1724,8 +1775,21 @@
         "y": 360,
         "wires": [
             [
-                "c3cce603f5005496"
+                "0c5e58fc67d3b1ef"
             ]
         ]
+    },
+    {
+        "id": "0c5e58fc67d3b1ef",
+        "type": "link out",
+        "z": "admin",
+        "name": "TO Line Upload",
+        "mode": "link",
+        "links": [
+            "a76e0b542c71a329"
+        ],
+        "x": 615,
+        "y": 360,
+        "wires": []
     }
 ]
