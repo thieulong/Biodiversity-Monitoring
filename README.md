@@ -1,5 +1,6 @@
 BIODIVERSITY DASHBOARD - QUICKSTART
 
+Please follow these steps below to install and setup the program:
 1. Unzip this folder anywhere (e.g., Desktop).
 2. Install Docker Desktop if you haven’t already:
    https://www.docker.com/products/docker-desktop/
@@ -11,7 +12,7 @@ BIODIVERSITY DASHBOARD - QUICKSTART
 6. Default login for Grafana: admin / 0m{-}>7nP8)C
 7. To stop, simply just close the browser 
 
-Note:
+**Note**:
 On first launch, Windows or Mac may warn you about running these scripts.
    - On Windows, click ‘Run anyway’ if prompted.
    - On Mac, click ‘Open’ (or ‘Open Anyway’ in Security settings if needed).
