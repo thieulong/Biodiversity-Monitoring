@@ -1,14 +1,48 @@
-k#!/bin/bash
+#!/bin/bash
 echo "==============================="
 echo "  BIODIVERSITY DASHBOARD SETUP"
 echo "==============================="
 echo ""
 
+# Function to check if Docker is ready
+is_docker_ready() {
+    docker info > /dev/null 2>&1
+    return $?
+}
+
+# Check if docker command is available
 if ! command -v docker &> /dev/null
 then
-    echo "Docker Desktop is not installed or not in PATH!"
-    echo "Please install and start Docker Desktop before continuing."
-    echo "Download here: https://www.docker.com/products/docker-desktop/"
+    echo "Docker Desktop is not installed."
+    echo "Downloading Docker Desktop installer to your Downloads folder..."
+    curl -L -o "$HOME/Downloads/Docker.dmg" "https://desktop.docker.com/mac/main/amd64/Docker.dmg"
+    echo "Docker Desktop installer has been downloaded to your Downloads folder."
+    echo "Please open 'Docker.dmg', install Docker Desktop, then re-run this script."
+    echo "Or download manually: https://www.docker.com/products/docker-desktop/"
+    read -p "Press enter to exit."
+    exit
+fi
+
+# Try to start Docker Desktop if it's not running
+if ! is_docker_ready; then
+    echo "Docker Desktop is installed but not running."
+    echo "Starting Docker Desktop..."
+    open -a Docker
+    echo "Waiting for Docker Desktop to start (this can take a minute)..."
+    # Wait up to 2 minutes for Docker to start
+    for i in {1..24}
+    do
+        sleep 5
+        if is_docker_ready; then
+            break
+        fi
+        echo "Still waiting for Docker Desktop..."
+    done
+fi
+
+# Final check
+if ! is_docker_ready; then
+    echo "Docker Desktop did not start successfully. Please start it manually, then rerun this script."
     read -p "Press enter to exit."
     exit
 fi
@@ -28,4 +62,3 @@ echo "- Or open http://localhost:3000/     (Grafana dashboard)"
 echo ""
 
 read -p "Press enter to exit."
-
