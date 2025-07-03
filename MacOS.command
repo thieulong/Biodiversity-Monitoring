@@ -28,15 +28,12 @@ if ! is_docker_ready; then
     echo "Docker Desktop is installed but not running."
     echo "Starting Docker Desktop..."
     open -a Docker
-    echo "Waiting for Docker Desktop to start (this can take a minute)..."
-    # Wait up to 2 minutes for Docker to start
-    for i in {1..24}
-    do
-        sleep 5
-        if is_docker_ready; then
-            break
-        fi
+    echo "Waiting 10 seconds for Docker Desktop to start..."
+    sleep 10
+    # Then check in a loop until Docker is ready
+    until is_docker_ready; do
         echo "Still waiting for Docker Desktop..."
+        sleep 5
     done
 fi
 

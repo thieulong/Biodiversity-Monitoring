@@ -6,102 +6,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
-            background: #181c20;
-            color: #f5f6fa;
+            background: #151b28;
+            color: #e8eaf2;
             font-family: 'Segoe UI', 'Arial', sans-serif;
             margin: 0;
             min-height: 100vh;
         }
         .container {
-            max-width: 420px;
-            margin: 60px auto;
-            background: #21232a;
+            max-width: 440px;
+            margin: 56px auto 0 auto;
+            background: #1d2231;
             border-radius: 20px;
-            box-shadow: 0 10px 32px #0006, 0 2px 8px #0001;
-            padding: 38px 32px 32px 32px;
+            box-shadow: 0 10px 32px #0007, 0 2px 8px #0002;
+            padding: 36px 32px 32px 32px;
         }
         h1 {
-            font-size: 2.1em;
+            font-size: 2.15em;
             font-weight: 700;
             letter-spacing: 1px;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             text-align: center;
-            color: #54a0ff;
+            color: #66a7ff;
         }
         .icon {
-            font-size: 2.4em;
-            display: block;
-            text-align: center;
-            margin-bottom: 4px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 8px;
         }
+        .icon img {
+            height: 56px;
+            width: 56px;
+            border-radius: 12px;
+        }
+        /* --- How to Use Box --- */
         .instructions {
-            background: #232836;
-            border-radius: 8px;
-            color: #b9f6ca;
-            font-size: 1.08em;
-            margin-bottom: 20px;
-            padding: 13px 17px 13px 22px;
-            box-shadow: 0 1px 4px #0002;
+            background: #202a3e;
+            border-radius: 12px;
+            color: #dbf3fe;
+            margin-bottom: 30px;
+            padding: 17px 20px 19px 24px;
+            border-left: 4px solid #51d4c2;
+            box-shadow: 0 2px 10px #1c293c33;
         }
         .instructions strong {
-            font-size: 1.25em;   
+            font-size: 1.16em;
             font-weight: 700;
+            color: #6fffd7;
+            letter-spacing: 1px;
             display: block;
-            margin-bottom: 0;
+            margin-bottom: 8px;
         }
         .instructions-list {
-            margin: 16px 0 0 18px;
-            color: #b9f6ca;
-            padding-left: 18px;
+            margin: 0 0 0 16px;
+            color: #d3ecf9;
+            padding-left: 12px;
         }
         .instructions-list li {
-            margin-bottom: 18px; 
-            line-height: 1.6;     
+            margin-bottom: 13px;
+            line-height: 1.6;
         }
         .instructions-list li:last-child {
-            margin-bottom: 0;  
+            margin-bottom: 0;
         }
+        /* --- Button Styling --- */
         .btn {
             display: block;
-            margin: 23px auto;
-            padding: 16px 0;
+            margin: 21px auto;
+            padding: 15px 0;
             width: 100%;
-            background: linear-gradient(90deg, #2e86de, #48dbfb);
-            color: #fff;
+            background: linear-gradient(90deg, #5196d9 0%, #60e0e2 100%);
+            color: #22304a;
             border: none;
             border-radius: 8px;
-            font-size: 1.18em;
-            font-weight: 600;
+            font-size: 1.16em;
+            font-weight: 700;
             letter-spacing: 0.5px;
             text-align: center;
             text-decoration: none;
-            transition: background 0.18s, box-shadow 0.18s;
-            box-shadow: 0 2px 8px #2e86de22;
+            transition: background 0.16s, box-shadow 0.16s;
+            box-shadow: 0 2px 12px #2a78c222;
             outline: none;
             cursor: pointer;
         }
         .btn:hover {
-            background: linear-gradient(90deg, #1b4f72, #0097a7);
-            box-shadow: 0 4px 18px #48dbfb44;
+            background: linear-gradient(90deg, #274b6d 0%, #46b7be 100%);
+            color: #fff;
         }
         .footer {
             text-align: center;
-            font-size: 0.98em;
-            color: #555d66;
-            margin-top: 32px;
+            font-size: 1em;
+            color: #92a6c6;
+            margin-top: 35px;
+            margin-bottom: 14px;
         }
         @media (max-width: 600px) {
             .container {
-                padding: 20px 6vw;
+                padding: 16px 5vw;
                 max-width: 99vw;
             }
-            h1 { font-size: 1.35em;}
+            h1 { font-size: 1.18em;}
         }
     </style>
 </head>
 <body>
   <div class="container">
-    <span class="icon">🌿</span>
+    <span class="icon">
+      <img src="img/rmit_logo.png" alt="Logo">
+    </span>
     <h1>Biodiversity Dashboard</h1>
     <div class="instructions">
         <strong>How to use:</strong>
@@ -115,7 +126,7 @@
     <a class="btn" href="http://localhost:3000/d/ce9iy4q6qr474f/dashboard-demo" target="_blank">View Grafana Dashboard</a>
   </div>
   <div class="footer">
-    &copy; 2025 Biodiversity Monitoring | <span style="color:#888;">For demo purposes</span>
+    &copy; 2025 Biodiversity Monitoring &nbsp;|&nbsp; For scientific purposes
   </div>
 </body>
 </html>
