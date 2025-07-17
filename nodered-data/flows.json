@@ -527,7 +527,7 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": "5",
+        "onceDelay": "10",
         "topic": "",
         "x": 180,
         "y": 660,
@@ -615,8 +615,8 @@
         "z": "csv-upload",
         "name": "CSV Upload",
         "info": "Unified ingestion path for edge devices",
-        "x": 130,
-        "y": 60,
+        "x": 90,
+        "y": 80,
         "wires": []
     },
     {
@@ -927,6 +927,90 @@
                 "29a1a2d6eb0b2cac"
             ]
         ]
+    },
+    {
+        "id": "4080de06aa396237",
+        "type": "http in",
+        "z": "csv-upload",
+        "name": "CSV upload",
+        "url": "/upload-files",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 420,
+        "wires": [
+            [
+                "891fbba0ee1f929d"
+            ]
+        ]
+    },
+    {
+        "id": "aac0546e0287f4f8",
+        "type": "link out",
+        "z": "csv-upload",
+        "name": "FROM http",
+        "mode": "link",
+        "links": [
+            "d924d50a97986c50"
+        ],
+        "x": 535,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "d924d50a97986c50",
+        "type": "link in",
+        "z": "csv-upload",
+        "name": "link in 3",
+        "links": [
+            "aac0546e0287f4f8"
+        ],
+        "x": 235,
+        "y": 80,
+        "wires": [
+            [
+                "479631dcf031492d"
+            ]
+        ]
+    },
+    {
+        "id": "891fbba0ee1f929d",
+        "type": "function",
+        "z": "csv-upload",
+        "name": "Handle multi-file upload",
+        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        // Create message for this file\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[`id${i}`]     // grab associated ID from body\n        };\n\n        // Send the message\n        node.send(fileMsg);\n\n        // Wait for 10 seconds before sending next file\n        await new Promise(resolve => setTimeout(resolve, 30000)); // 10000 ms = 10 sec\n    }\n}\n\n// Start the async sending\nsendWithDelay();\n\nreturn null; // Return null because we’re sending messages asynchronously\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 420,
+        "wires": [
+            [
+                "aac0546e0287f4f8",
+                "01a4df413145293b"
+            ]
+        ]
+    },
+    {
+        "id": "01a4df413145293b",
+        "type": "debug",
+        "z": "csv-upload",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 400,
+        "wires": []
     },
     {
         "id": "linkOutMqtt",

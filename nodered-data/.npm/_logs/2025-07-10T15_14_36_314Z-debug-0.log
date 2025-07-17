@@ -1,0 +1,25 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.19.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/data/.npmrc
+5 silly config load:file:/usr/src/node-red/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm remove node-red-contrib-multipart-stream-encoder
+8 verbose argv "remove" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "node-red-contrib-multipart-stream-encoder"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2025-07-10T15_14_36_314Z-
+10 verbose logfile /data/.npm/_logs/2025-07-10T15_14_36_314Z-debug-0.log
+11 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly reify mark retired [ '/data/node_modules/node-red-contrib-multipart-stream-encoder' ]
+15 silly reify moves {
+15 silly reify   '/data/node_modules/node-red-contrib-multipart-stream-encoder': '/data/node_modules/.node-red-contrib-multipart-stream-encoder-62WURUbm'
+15 silly reify }
+16 silly REMOVE node_modules/node-red-contrib-multipart-stream-encoder
+17 verbose cwd /data
+18 verbose os Linux 6.8.0-60-generic
+19 verbose node v20.19.0
+20 verbose npm  v10.8.2
+21 verbose exit 0
+22 info ok

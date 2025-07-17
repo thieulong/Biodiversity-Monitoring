@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload CSV Files – Biodiversity Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/upload/upload.css">
+</head>
+<body>
+  <div class="container">
+    <span class="icon">
+      <img src="/img/rmit_logo.png" alt="Logo">
+    </span>
+    <h1>Upload / Erase CSV Data</h1>
+    <div class="instructions">
+        <strong>Instructions:</strong>
+        <ol class="instructions-list">
+            <li>Click on "Browse" to select one or multiple CSV files.</li>
+            <li>Assign an ID or description for each file.</li>
+            <li>Click <b>Upload All</b> to send data to the database.</li>
+            <li>Go back and check the Grafana Dashboard.</li>
+            <li>Click <b>Erase All</b> to remove all data in the database if needed.</li>
+        </ol>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".csv">
+    <div id="fileList"></div>
+    <button id="uploadBtn" class="btn">Upload All</button>
+    <p id="status"></p>
+    <a class="btn" href="/index.html">← Back to Dashboard</a>
+  </div>
+  <div class="footer">
+    &copy; 2025 Biodiversity Monitoring &nbsp;|&nbsp; For scientific purposes
+  </div>
+  <script src="/upload/upload.js"></script>
+</body>
+</html>

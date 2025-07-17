@@ -1,0 +1,208 @@
+0 verbose cli /usr/local/bin/node /usr/local/bin/npm
+1 info using npm@10.8.2
+2 info using node@v20.19.0
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/data/.npmrc
+5 silly config load:file:/usr/src/node-red/.npmrc
+6 silly config load:file:/usr/local/etc/npmrc
+7 verbose title npm install node-red-contrib-multipart-stream-decoder@1.0.0
+8 verbose argv "install" "--no-audit" "--no-update-notifier" "--no-fund" "--save" "--save-prefix" "~" "--omit" "dev" "--engine-strict" "node-red-contrib-multipart-stream-decoder@1.0.0"
+9 verbose logfile logs-max:10 dir:/data/.npm/_logs/2025-07-17T07_53_46_113Z-
+10 verbose logfile /data/.npm/_logs/2025-07-17T07_53_46_113Z-debug-0.log
+11 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+12 silly logfile done cleaning log files
+13 silly idealTree buildDeps
+14 silly fetch manifest node-red-contrib-multipart-stream-decoder@1.0.0
+15 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-multipart-stream-decoder cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/node-red-contrib-multipart-stream-decoder 1151ms (cache revalidated)
+17 silly packumentCache full:https://registry.npmjs.org/node-red-contrib-multipart-stream-decoder set size:131631 disposed:false
+18 silly placeDep ROOT node-red-contrib-multipart-stream-decoder@1.0.0 OK for: node-red-project@0.0.1 want: 1.0.0
+19 silly fetch manifest mustache@^2.3.0
+20 silly packumentCache full:https://registry.npmjs.org/mustache cache-miss
+21 silly fetch manifest auto-parse@^1.3.0
+22 silly packumentCache full:https://registry.npmjs.org/auto-parse cache-miss
+23 silly fetch manifest node-buffers@^0.1.1
+24 silly packumentCache full:https://registry.npmjs.org/node-buffers cache-miss
+25 silly fetch manifest axios@^1.2.1
+26 silly packumentCache full:https://registry.npmjs.org/axios cache-miss
+27 silly fetch manifest @mhoc/axios-digest-auth@^0.8.0
+28 silly packumentCache full:https://registry.npmjs.org/@mhoc%2faxios-digest-auth cache-miss
+29 http fetch GET 200 https://registry.npmjs.org/mustache 34ms (cache revalidated)
+30 silly packumentCache full:https://registry.npmjs.org/mustache set size:166955 disposed:false
+31 http fetch GET 200 https://registry.npmjs.org/axios 72ms (cache revalidated)
+32 silly packumentCache full:https://registry.npmjs.org/axios set size:668703 disposed:false
+33 http fetch GET 200 https://registry.npmjs.org/auto-parse 808ms (cache revalidated)
+34 silly packumentCache full:https://registry.npmjs.org/auto-parse set size:62834 disposed:false
+35 http fetch GET 200 https://registry.npmjs.org/node-buffers 810ms (cache revalidated)
+36 silly packumentCache full:https://registry.npmjs.org/node-buffers set size:5192 disposed:false
+37 http fetch GET 200 https://registry.npmjs.org/@mhoc%2faxios-digest-auth 1736ms (cache revalidated)
+38 silly packumentCache full:https://registry.npmjs.org/@mhoc%2faxios-digest-auth set size:18906 disposed:false
+39 silly placeDep ROOT @mhoc/axios-digest-auth@0.8.0 OK for: node-red-contrib-multipart-stream-decoder@1.0.0 want: ^0.8.0
+40 silly placeDep ROOT auto-parse@1.8.0 OK for: node-red-contrib-multipart-stream-decoder@1.0.0 want: ^1.3.0
+41 silly placeDep ROOT axios@1.10.0 OK for: node-red-contrib-multipart-stream-decoder@1.0.0 want: ^1.2.1
+42 silly placeDep node_modules/node-red-contrib-multipart-stream-decoder mustache@2.3.2 OK for: node-red-contrib-multipart-stream-decoder@1.0.0 want: ^2.3.0
+43 silly placeDep ROOT node-buffers@0.1.1 OK for: node-red-contrib-multipart-stream-decoder@1.0.0 want: ^0.1.1
+44 silly fetch manifest axios@0.22.0
+45 silly packumentCache full:https://registry.npmjs.org/axios cache-hit
+46 silly fetch manifest typpy@2.3.11
+47 silly packumentCache full:https://registry.npmjs.org/typpy cache-miss
+48 silly fetch manifest follow-redirects@^1.15.6
+49 silly packumentCache full:https://registry.npmjs.org/follow-redirects cache-miss
+50 silly fetch manifest form-data@^4.0.0
+51 silly packumentCache full:https://registry.npmjs.org/form-data cache-miss
+52 silly fetch manifest proxy-from-env@^1.1.0
+53 silly packumentCache full:https://registry.npmjs.org/proxy-from-env cache-miss
+54 http fetch GET 200 https://registry.npmjs.org/proxy-from-env 31ms (cache revalidated)
+55 silly packumentCache full:https://registry.npmjs.org/proxy-from-env set size:15831 disposed:false
+56 http fetch GET 200 https://registry.npmjs.org/follow-redirects 35ms (cache revalidated)
+57 silly packumentCache full:https://registry.npmjs.org/follow-redirects set size:182478 disposed:false
+58 http fetch GET 200 https://registry.npmjs.org/form-data 37ms (cache updated)
+59 silly packumentCache full:https://registry.npmjs.org/form-data set size:undefined disposed:false
+60 http fetch GET 200 https://registry.npmjs.org/typpy 713ms (cache revalidated)
+61 silly packumentCache full:https://registry.npmjs.org/typpy set size:45783 disposed:false
+62 silly placeDep node_modules/@mhoc/axios-digest-auth axios@0.22.0 OK for: @mhoc/axios-digest-auth@0.8.0 want: 0.22.0
+63 silly fetch manifest follow-redirects@^1.14.4
+64 silly packumentCache full:https://registry.npmjs.org/follow-redirects cache-hit
+65 silly placeDep ROOT typpy@2.3.11 OK for: auto-parse@1.8.0 want: 2.3.11
+66 silly fetch manifest function.name@^1.0.3
+67 silly packumentCache full:https://registry.npmjs.org/function.name cache-miss
+68 http fetch GET 200 https://registry.npmjs.org/function.name 713ms (cache revalidated)
+69 silly packumentCache full:https://registry.npmjs.org/function.name set size:38676 disposed:false
+70 silly placeDep ROOT follow-redirects@1.15.9 OK for: axios@1.10.0 want: ^1.15.6
+71 silly placeDep ROOT form-data@4.0.4 OK for: axios@1.10.0 want: ^4.0.0
+72 silly placeDep ROOT proxy-from-env@1.1.0 OK for: axios@1.10.0 want: ^1.1.0
+73 silly fetch manifest hasown@^2.0.2
+74 silly packumentCache full:https://registry.npmjs.org/hasown cache-miss
+75 silly fetch manifest asynckit@^0.4.0
+76 silly packumentCache full:https://registry.npmjs.org/asynckit cache-miss
+77 silly fetch manifest combined-stream@^1.0.8
+78 silly packumentCache full:https://registry.npmjs.org/combined-stream cache-miss
+79 silly fetch manifest es-set-tostringtag@^2.1.0
+80 silly packumentCache full:https://registry.npmjs.org/es-set-tostringtag cache-miss
+81 http fetch GET 200 https://registry.npmjs.org/asynckit 25ms (cache revalidated)
+82 silly packumentCache full:https://registry.npmjs.org/asynckit set size:17357 disposed:false
+83 http fetch GET 200 https://registry.npmjs.org/hasown 30ms (cache revalidated)
+84 silly packumentCache full:https://registry.npmjs.org/hasown set size:12476 disposed:false
+85 http fetch GET 200 https://registry.npmjs.org/combined-stream 33ms (cache revalidated)
+86 silly packumentCache full:https://registry.npmjs.org/combined-stream set size:40337 disposed:false
+87 http fetch GET 200 https://registry.npmjs.org/es-set-tostringtag 39ms (cache revalidated)
+88 silly packumentCache full:https://registry.npmjs.org/es-set-tostringtag set size:22094 disposed:false
+89 silly placeDep ROOT asynckit@0.4.0 OK for: form-data@4.0.4 want: ^0.4.0
+90 silly placeDep ROOT combined-stream@1.0.8 OK for: form-data@4.0.4 want: ^1.0.8
+91 silly placeDep ROOT es-set-tostringtag@2.1.0 OK for: form-data@4.0.4 want: ^2.1.0
+92 silly placeDep ROOT hasown@2.0.2 OK for: form-data@4.0.4 want: ^2.0.2
+93 silly fetch manifest delayed-stream@~1.0.0
+94 silly packumentCache full:https://registry.npmjs.org/delayed-stream cache-miss
+95 silly fetch manifest es-errors@^1.3.0
+96 silly packumentCache full:https://registry.npmjs.org/es-errors cache-miss
+97 silly fetch manifest get-intrinsic@^1.2.6
+98 silly packumentCache full:https://registry.npmjs.org/get-intrinsic cache-miss
+99 silly fetch manifest has-tostringtag@^1.0.2
+100 silly packumentCache full:https://registry.npmjs.org/has-tostringtag cache-miss
+101 silly fetch manifest function-bind@^1.1.2
+102 silly packumentCache full:https://registry.npmjs.org/function-bind cache-miss
+103 http fetch GET 200 https://registry.npmjs.org/get-intrinsic 31ms (cache revalidated)
+104 silly packumentCache full:https://registry.npmjs.org/get-intrinsic set size:57687 disposed:false
+105 http fetch GET 200 https://registry.npmjs.org/function-bind 34ms (cache revalidated)
+106 silly packumentCache full:https://registry.npmjs.org/function-bind set size:15733 disposed:false
+107 http fetch GET 200 https://registry.npmjs.org/es-errors 36ms (cache revalidated)
+108 silly packumentCache full:https://registry.npmjs.org/es-errors set size:16918 disposed:false
+109 http fetch GET 200 https://registry.npmjs.org/delayed-stream 41ms (cache revalidated)
+110 silly packumentCache full:https://registry.npmjs.org/delayed-stream set size:15820 disposed:false
+111 http fetch GET 200 https://registry.npmjs.org/has-tostringtag 54ms (cache revalidated)
+112 silly packumentCache full:https://registry.npmjs.org/has-tostringtag set size:13945 disposed:false
+113 silly placeDep ROOT delayed-stream@1.0.0 OK for: combined-stream@1.0.8 want: ~1.0.0
+114 silly placeDep ROOT es-errors@1.3.0 OK for: es-set-tostringtag@2.1.0 want: ^1.3.0
+115 silly placeDep ROOT get-intrinsic@1.3.0 OK for: es-set-tostringtag@2.1.0 want: ^1.2.6
+116 silly placeDep ROOT has-tostringtag@1.0.2 OK for: es-set-tostringtag@2.1.0 want: ^1.0.2
+117 silly fetch manifest call-bind-apply-helpers@^1.0.2
+118 silly packumentCache full:https://registry.npmjs.org/call-bind-apply-helpers cache-miss
+119 silly fetch manifest es-define-property@^1.0.1
+120 silly packumentCache full:https://registry.npmjs.org/es-define-property cache-miss
+121 silly fetch manifest es-object-atoms@^1.1.1
+122 silly packumentCache full:https://registry.npmjs.org/es-object-atoms cache-miss
+123 silly fetch manifest get-proto@^1.0.1
+124 silly packumentCache full:https://registry.npmjs.org/get-proto cache-miss
+125 silly fetch manifest gopd@^1.2.0
+126 silly packumentCache full:https://registry.npmjs.org/gopd cache-miss
+127 silly fetch manifest has-symbols@^1.1.0
+128 silly packumentCache full:https://registry.npmjs.org/has-symbols cache-miss
+129 silly fetch manifest math-intrinsics@^1.1.0
+130 silly packumentCache full:https://registry.npmjs.org/math-intrinsics cache-miss
+131 silly fetch manifest has-symbols@^1.0.3
+132 silly packumentCache full:https://registry.npmjs.org/has-symbols cache-miss
+133 http fetch GET 200 https://registry.npmjs.org/gopd 24ms (cache revalidated)
+134 silly packumentCache full:https://registry.npmjs.org/gopd set size:11458 disposed:false
+135 http fetch GET 200 https://registry.npmjs.org/call-bind-apply-helpers 34ms (cache revalidated)
+136 silly packumentCache full:https://registry.npmjs.org/call-bind-apply-helpers set size:12744 disposed:false
+137 http fetch GET 200 https://registry.npmjs.org/es-define-property 34ms (cache revalidated)
+138 silly packumentCache full:https://registry.npmjs.org/es-define-property set size:8542 disposed:false
+139 http fetch GET 200 https://registry.npmjs.org/es-object-atoms 45ms (cache revalidated)
+140 silly packumentCache full:https://registry.npmjs.org/es-object-atoms set size:15304 disposed:false
+141 http fetch GET 200 https://registry.npmjs.org/has-symbols 54ms (cache revalidated)
+142 silly packumentCache full:https://registry.npmjs.org/has-symbols set size:21550 disposed:false
+143 http fetch GET 200 https://registry.npmjs.org/get-proto 79ms (cache revalidated)
+144 silly packumentCache full:https://registry.npmjs.org/get-proto set size:8300 disposed:false
+145 http fetch GET 200 https://registry.npmjs.org/math-intrinsics 81ms (cache revalidated)
+146 silly packumentCache full:https://registry.npmjs.org/math-intrinsics set size:9265 disposed:false
+147 http fetch GET 200 https://registry.npmjs.org/has-symbols 82ms (cache revalidated)
+148 silly packumentCache full:https://registry.npmjs.org/has-symbols set size:21550 disposed:false
+149 silly packumentCache full:https://registry.npmjs.org/has-symbols dispose
+150 silly placeDep ROOT call-bind-apply-helpers@1.0.2 OK for: get-intrinsic@1.3.0 want: ^1.0.2
+151 silly placeDep ROOT es-define-property@1.0.1 OK for: get-intrinsic@1.3.0 want: ^1.0.1
+152 silly placeDep ROOT es-object-atoms@1.1.1 OK for: get-intrinsic@1.3.0 want: ^1.1.1
+153 silly placeDep ROOT function-bind@1.1.2 OK for: get-intrinsic@1.3.0 want: ^1.1.2
+154 silly placeDep ROOT get-proto@1.0.1 OK for: get-intrinsic@1.3.0 want: ^1.0.1
+155 silly placeDep ROOT gopd@1.2.0 OK for: get-intrinsic@1.3.0 want: ^1.2.0
+156 silly placeDep ROOT has-symbols@1.1.0 OK for: get-intrinsic@1.3.0 want: ^1.1.0
+157 silly placeDep ROOT math-intrinsics@1.1.0 OK for: get-intrinsic@1.3.0 want: ^1.1.0
+158 silly fetch manifest dunder-proto@^1.0.1
+159 silly packumentCache full:https://registry.npmjs.org/dunder-proto cache-miss
+160 http fetch GET 200 https://registry.npmjs.org/dunder-proto 33ms (cache revalidated)
+161 silly packumentCache full:https://registry.npmjs.org/dunder-proto set size:8256 disposed:false
+162 silly placeDep ROOT dunder-proto@1.0.1 OK for: get-proto@1.0.1 want: ^1.0.1
+163 silly placeDep ROOT function.name@1.0.14 OK for: typpy@2.3.11 want: ^1.0.3
+164 silly fetch manifest noop6@^1.0.1
+165 silly packumentCache full:https://registry.npmjs.org/noop6 cache-miss
+166 http fetch GET 200 https://registry.npmjs.org/noop6 691ms (cache revalidated)
+167 silly packumentCache full:https://registry.npmjs.org/noop6 set size:24952 disposed:false
+168 silly placeDep ROOT noop6@1.0.10 OK for: function.name@1.0.14 want: ^1.0.1
+169 silly reify moves {}
+170 silly tarball no local data for form-data@https://registry.npmjs.org/form-data/-/form-data-4.0.4.tgz. Extracting by manifest.
+171 http fetch GET 200 https://registry.npmjs.org/form-data/-/form-data-4.0.4.tgz 74ms (cache miss)
+172 silly ADD node_modules/noop6
+173 silly ADD node_modules/function.name
+174 silly ADD node_modules/dunder-proto
+175 silly ADD node_modules/math-intrinsics
+176 silly ADD node_modules/has-symbols
+177 silly ADD node_modules/gopd
+178 silly ADD node_modules/get-proto
+179 silly ADD node_modules/function-bind
+180 silly ADD node_modules/es-object-atoms
+181 silly ADD node_modules/es-define-property
+182 silly ADD node_modules/call-bind-apply-helpers
+183 silly ADD node_modules/has-tostringtag
+184 silly ADD node_modules/get-intrinsic
+185 silly ADD node_modules/es-errors
+186 silly ADD node_modules/delayed-stream
+187 silly ADD node_modules/hasown
+188 silly ADD node_modules/es-set-tostringtag
+189 silly ADD node_modules/combined-stream
+190 silly ADD node_modules/asynckit
+191 silly ADD node_modules/proxy-from-env
+192 silly ADD node_modules/form-data
+193 silly ADD node_modules/follow-redirects
+194 silly ADD node_modules/typpy
+195 silly ADD node_modules/node-buffers
+196 silly ADD node_modules/axios
+197 silly ADD node_modules/auto-parse
+198 silly ADD node_modules/@mhoc/axios-digest-auth
+199 silly ADD node_modules/@mhoc/axios-digest-auth/node_modules/axios
+200 silly ADD node_modules/node-red-contrib-multipart-stream-decoder
+201 silly ADD node_modules/node-red-contrib-multipart-stream-decoder/node_modules/mustache
+202 verbose cwd /data
+203 verbose os Linux 6.8.0-64-generic
+204 verbose node v20.19.0
+205 verbose npm  v10.8.2
+206 verbose exit 0
+207 info ok

@@ -229,7 +229,7 @@ module.exports = {
      * When httpStaticRoot is set differently to httpAdminRoot, there is no need
      * to move httpAdminRoot
      */
-    //httpStatic: '/home/nol/node-red-static/', //single static source
+    httpStatic: '/data/public',
     /**
      *  OR multiple static sources can be created using an array of objects...
      *  Each object can also contain an options object for further configuration.
@@ -511,8 +511,14 @@ module.exports = {
      */
     functionGlobalContext: {
         // os:require('os'),
+        busboy:require('busboy'),
+        fs:require('fs'),
+        path:require('path')
     },
-
+    httpNodeCors: {
+        origin: "*",
+        methods: "GET, PUT, POST, DELETE"
+    },
     /** The maximum number of messages nodes will buffer internally as part of their
      * operation. This applies across a range of nodes that operate on message sequences.
      * defaults to no limit. A value of 0 also means no limit is applied.

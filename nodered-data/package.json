@@ -4,6 +4,7 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
+        "busboy": "^1.6.0",
         "node-red-contrib-chunks-to-lines": "~0.8.1",
         "node-red-contrib-postgresql": "~0.14.2",
         "node-red-contrib-ui-upload": "~0.8.1",
