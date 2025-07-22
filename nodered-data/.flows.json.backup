@@ -471,7 +471,7 @@
         "type": "postgresql",
         "z": "db-setup",
         "name": "Create tables",
-        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n-- Dimension table\nCREATE TABLE IF NOT EXISTS sensors(id SERIAL PRIMARY KEY, type VARCHAR(50), location VARCHAR(50));\n-- Main data\nCREATE TABLE IF NOT EXISTS sensor_data(time TIMESTAMPTZ NOT NULL, sensor_id INTEGER, start_seconds INTEGER, end_seconds INTEGER, scientific_name VARCHAR(50), common_name VARCHAR(50), confidence DOUBLE PRECISION, FOREIGN KEY(sensor_id) REFERENCES sensors(id));\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(received_at timestamptz NOT NULL, inserted_at timestamptz NOT NULL);\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(time timestamptz DEFAULT NOW(), error_msg text NOT NULL, raw_payload jsonb);",
+        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n-- Dimension table\nCREATE TABLE IF NOT EXISTS sensors(id SERIAL PRIMARY KEY, type VARCHAR(50), location VARCHAR(50));\n-- Main data\nCREATE TABLE IF NOT EXISTS sensor_data(time TIMESTAMPTZ NOT NULL, sensor_id VARCHAR(50), start_seconds INTEGER, end_seconds INTEGER, scientific_name VARCHAR(50), common_name VARCHAR(50), confidence DOUBLE PRECISION, FOREIGN KEY(sensor_id) REFERENCES sensors(id));\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(received_at timestamptz NOT NULL, inserted_at timestamptz NOT NULL);\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(time timestamptz DEFAULT NOW(), error_msg text NOT NULL, raw_payload jsonb);",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -624,7 +624,7 @@
         "type": "debug",
         "z": "csv-upload",
         "name": "Done",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -954,8 +954,8 @@
         "links": [
             "d924d50a97986c50"
         ],
-        "x": 535,
-        "y": 460,
+        "x": 525,
+        "y": 420,
         "wires": []
     },
     {
@@ -979,7 +979,7 @@
         "type": "function",
         "z": "csv-upload",
         "name": "Handle multi-file upload",
-        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        // Create message for this file\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[`id${i}`]     // grab associated ID from body\n        };\n\n        // Send the message\n        node.send(fileMsg);\n\n        // Wait for 10 seconds before sending next file\n        await new Promise(resolve => setTimeout(resolve, 20000)); // 10000 ms = 10 sec\n    }\n}\n\n// Start the async sending\nsendWithDelay();\n\nreturn null; // Return null because we’re sending messages asynchronously\n",
+        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[`id${i}`]     // grab associated ID from body\n        };\n\n        node.send(fileMsg);\n\n        await new Promise(resolve => setTimeout(resolve, 30000)); \n    }\n}\n\nsendWithDelay();\n\nreturn null; ",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -991,25 +991,41 @@
         "wires": [
             [
                 "aac0546e0287f4f8",
-                "01a4df413145293b"
+                "c456ecdcc03e4056"
             ]
         ]
     },
     {
-        "id": "01a4df413145293b",
-        "type": "debug",
+        "id": "c456ecdcc03e4056",
+        "type": "function",
         "z": "csv-upload",
-        "name": "debug 1",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 580,
-        "y": 400,
+        "name": "Extract ID",
+        "func": "let fileID = msg.id || msg.payload.id;\nreturn {\n    id: fileID\n};\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 480,
+        "wires": [
+            [
+                "5940e71d30f34d95"
+            ]
+        ]
+    },
+    {
+        "id": "5940e71d30f34d95",
+        "type": "link out",
+        "z": "csv-upload",
+        "name": "FROM ID",
+        "mode": "link",
+        "links": [
+            "3f20fe7b79ffd7b9"
+        ],
+        "x": 425,
+        "y": 480,
         "wires": []
     },
     {
@@ -1212,7 +1228,7 @@
         "type": "function",
         "z": "db-ingestion",
         "name": "Normalize detection",
-        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length===8 && timeStr.length===6) {\n    const [y,M,d,h,m,s] = [\n      dateStr.slice(0,4),\n      dateStr.slice(4,6),\n      dateStr.slice(6,8),\n      timeStr.slice(0,2),\n      timeStr.slice(2,4),\n      timeStr.slice(4,6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers:\nconst rec = {\n  time:            timeVal,\n  sensor_id:       row.sensor_id  || row.sensorId  || 1,\n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence)    || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id,\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
+        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length === 8 && timeStr.length === 6) {\n    const [y, M, d, h, m, s] = [\n      dateStr.slice(0, 4),\n      dateStr.slice(4, 6),\n      dateStr.slice(6, 8),\n      timeStr.slice(0, 2),\n      timeStr.slice(2, 4),\n      timeStr.slice(4, 6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers\nconst rec = {\n  time:            timeVal,\n  sensor_id:       msg.id, \n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence) || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id, // string-safe now\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1320,9 +1336,7 @@
         "z": "db-ingestion",
         "name": "Catch errors",
         "scope": [
-            "ad0dea488b9e2098",
-            "4c4415142a097a2a",
-            "4defb9ee116ee672"
+            "ad0dea488b9e2098"
         ],
         "uncaught": false,
         "x": 170,
@@ -1338,8 +1352,13 @@
         "type": "function",
         "z": "db-ingestion",
         "name": "Format error",
-        "func": "msg.error_msg=msg.error.message||String(msg.error); msg.raw_payload={row:msg.payload}; return msg;",
+        "func": "msg.error_msg = msg.error.message || String(msg.error);\nmsg.raw_payload = JSON.stringify(msg.payload || {});\nreturn msg",
         "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 370,
         "y": 500,
         "wires": [
@@ -1353,7 +1372,7 @@
         "type": "postgresql",
         "z": "db-ingestion",
         "name": "Log sensor_error",
-        "query": "INSERT INTO sensor_errors(time,error_msg,raw_payload) VALUES(NOW(), $1, $2);",
+        "query": "INSERT INTO sensor_errors(time,error_msg,raw_payload) VALUES(NOW(), msg.error_msg, msg.raw_payload);",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -1376,6 +1395,22 @@
         ],
         "x": 185,
         "y": 120,
+        "wires": [
+            [
+                "ad0dea488b9e2098"
+            ]
+        ]
+    },
+    {
+        "id": "3f20fe7b79ffd7b9",
+        "type": "link in",
+        "z": "db-ingestion",
+        "name": "link in 4",
+        "links": [
+            "5940e71d30f34d95"
+        ],
+        "x": 185,
+        "y": 180,
         "wires": [
             [
                 "ad0dea488b9e2098"
