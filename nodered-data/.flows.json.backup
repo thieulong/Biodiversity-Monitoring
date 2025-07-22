@@ -471,7 +471,7 @@
         "type": "postgresql",
         "z": "db-setup",
         "name": "Create tables",
-        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n-- Dimension table\nCREATE TABLE IF NOT EXISTS sensors(id SERIAL PRIMARY KEY, type VARCHAR(50), location VARCHAR(50));\n-- Main data\nCREATE TABLE IF NOT EXISTS sensor_data(time TIMESTAMPTZ NOT NULL, sensor_id VARCHAR(50), start_seconds INTEGER, end_seconds INTEGER, scientific_name VARCHAR(50), common_name VARCHAR(50), confidence DOUBLE PRECISION, FOREIGN KEY(sensor_id) REFERENCES sensors(id));\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(received_at timestamptz NOT NULL, inserted_at timestamptz NOT NULL);\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(time timestamptz DEFAULT NOW(), error_msg text NOT NULL, raw_payload jsonb);",
+        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n\n-- Dimension table (optional for now)\nCREATE TABLE IF NOT EXISTS sensors(\n    id SERIAL PRIMARY KEY,\n    type VARCHAR(50),\n    location VARCHAR(50)\n);\n\n-- Main data (sensor_id is now VARCHAR)\nCREATE TABLE IF NOT EXISTS sensor_data(\n    time TIMESTAMPTZ NOT NULL,\n    sensor_id VARCHAR(50),\n    start_seconds INTEGER,\n    end_seconds INTEGER,\n    scientific_name VARCHAR(50),\n    common_name VARCHAR(50),\n    confidence DOUBLE PRECISION\n);\n\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(\n    received_at timestamptz NOT NULL,\n    inserted_at timestamptz NOT NULL\n);\n\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(\n    time timestamptz DEFAULT NOW(),\n    error_msg text NOT NULL,\n    raw_payload jsonb\n);\n",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -941,7 +941,8 @@
         "y": 420,
         "wires": [
             [
-                "891fbba0ee1f929d"
+                "891fbba0ee1f929d",
+                "ab56472b4d5b43b4"
             ]
         ]
     },
@@ -979,10 +980,10 @@
         "type": "function",
         "z": "csv-upload",
         "name": "Handle multi-file upload",
-        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[`id${i}`]     // grab associated ID from body\n        };\n\n        node.send(fileMsg);\n\n        await new Promise(resolve => setTimeout(resolve, 30000)); \n    }\n}\n\nsendWithDelay();\n\nreturn null; ",
+        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[id${ i }]     // grab associated ID from body\n    };\n\n    node.send(fileMsg);\n\n    // Wait 30 seconds before sending next file\n    await new Promise(resolve => setTimeout(resolve, 30000));\n}\n\n// After all files are sent, send original msg for HTTP response\nmsg.payload = { success: true, message: \"All files processed successfully\" };\nnode.send(msg);\n}\n\nsendWithDelay();\n\nreturn null;",
         "outputs": 1,
         "timeout": 0,
-        "noerr": 0,
+        "noerr": 6,
         "initialize": "",
         "finalize": "",
         "libs": [],
@@ -1026,6 +1027,17 @@
         ],
         "x": 425,
         "y": 480,
+        "wires": []
+    },
+    {
+        "id": "ab56472b4d5b43b4",
+        "type": "http response",
+        "z": "csv-upload",
+        "name": "Upload Status",
+        "statusCode": "",
+        "headers": {},
+        "x": 320,
+        "y": 540,
         "wires": []
     },
     {
@@ -1228,7 +1240,7 @@
         "type": "function",
         "z": "db-ingestion",
         "name": "Normalize detection",
-        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length === 8 && timeStr.length === 6) {\n    const [y, M, d, h, m, s] = [\n      dateStr.slice(0, 4),\n      dateStr.slice(4, 6),\n      dateStr.slice(6, 8),\n      timeStr.slice(0, 2),\n      timeStr.slice(2, 4),\n      timeStr.slice(4, 6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers\nconst rec = {\n  time:            timeVal,\n  sensor_id:       msg.id, \n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence) || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id, // string-safe now\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
+        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length === 8 && timeStr.length === 6) {\n    const [y, M, d, h, m, s] = [\n      dateStr.slice(0, 4),\n      dateStr.slice(4, 6),\n      dateStr.slice(6, 8),\n      timeStr.slice(0, 2),\n      timeStr.slice(2, 4),\n      timeStr.slice(4, 6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers\nconst rec = {\n  time:            timeVal,\n  sensor_id:       String(msg.id || row.sensor_id || row.sensorId || \"unknown\"), \n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence) || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id, // string-safe now\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1268,7 +1280,7 @@
         "type": "postgresql",
         "z": "db-ingestion",
         "name": "Insert detection row",
-        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence) VALUES($1,$2,$3,$4,$5,$6,$7);",
+        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence)\nVALUES($1,$2,$3,$4,$5,$6,$7);\n",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -1289,7 +1301,12 @@
         "name": "Debug Insert",
         "active": false,
         "tosidebar": true,
+        "console": false,
+        "tostatus": false,
         "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
         "x": 930,
         "y": 240,
         "wires": []
@@ -1335,9 +1352,7 @@
         "type": "catch",
         "z": "db-ingestion",
         "name": "Catch errors",
-        "scope": [
-            "ad0dea488b9e2098"
-        ],
+        "scope": [],
         "uncaught": false,
         "x": 170,
         "y": 500,
@@ -1909,6 +1924,50 @@
         ],
         "x": 615,
         "y": 360,
+        "wires": []
+    },
+    {
+        "id": "ea1617cf1b43ac27",
+        "type": "http in",
+        "z": "admin",
+        "name": "Erase Data from UI",
+        "url": "/erase-data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 520,
+        "wires": [
+            [
+                "b8be57e14d46a8d8"
+            ]
+        ]
+    },
+    {
+        "id": "b8be57e14d46a8d8",
+        "type": "postgresql",
+        "z": "admin",
+        "name": "Truncate",
+        "query": "TRUNCATE sensor_data, ingestion_metrics, sensor_errors RESTART IDENTITY;",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "outputs": 1,
+        "x": 400,
+        "y": 520,
+        "wires": [
+            [
+                "5f4e9accb8dc67d9"
+            ]
+        ]
+    },
+    {
+        "id": "5f4e9accb8dc67d9",
+        "type": "http response",
+        "z": "admin",
+        "name": "Erase Status",
+        "statusCode": "",
+        "headers": {},
+        "x": 670,
+        "y": 520,
         "wires": []
     }
 ]

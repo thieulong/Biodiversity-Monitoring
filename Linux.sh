@@ -44,10 +44,7 @@ else
     xdg-open "index.html"
 fi
 echo ""
-echo "If the dashboard doesn't open automatically:"
-echo "- Open 'index.html' in this folder"
-echo "- Or open http://localhost:1880/ui/  (CSV upload)"
-echo "- Or open http://localhost:3000/     (Grafana dashboard)"
+echo "If the dashboard doesn't open automatically. Please manually open 'index.html' in this folder"
 echo ""
 
 read -p "Press enter to exit."

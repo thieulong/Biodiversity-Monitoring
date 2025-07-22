@@ -471,7 +471,7 @@
         "type": "postgresql",
         "z": "db-setup",
         "name": "Create tables",
-        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n-- Dimension table\nCREATE TABLE IF NOT EXISTS sensors(id SERIAL PRIMARY KEY, type VARCHAR(50), location VARCHAR(50));\n-- Main data\nCREATE TABLE IF NOT EXISTS sensor_data(time TIMESTAMPTZ NOT NULL, sensor_id VARCHAR(50), start_seconds INTEGER, end_seconds INTEGER, scientific_name VARCHAR(50), common_name VARCHAR(50), confidence DOUBLE PRECISION, FOREIGN KEY(sensor_id) REFERENCES sensors(id));\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(received_at timestamptz NOT NULL, inserted_at timestamptz NOT NULL);\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(time timestamptz DEFAULT NOW(), error_msg text NOT NULL, raw_payload jsonb);",
+        "query": "-- Enable extension\nCREATE EXTENSION IF NOT EXISTS timescaledb;\n\n-- Dimension table (optional for now)\nCREATE TABLE IF NOT EXISTS sensors(\n    id SERIAL PRIMARY KEY,\n    type VARCHAR(50),\n    location VARCHAR(50)\n);\n\n-- Main data (sensor_id is now VARCHAR)\nCREATE TABLE IF NOT EXISTS sensor_data(\n    time TIMESTAMPTZ NOT NULL,\n    sensor_id VARCHAR(50),\n    start_seconds INTEGER,\n    end_seconds INTEGER,\n    scientific_name VARCHAR(50),\n    common_name VARCHAR(50),\n    confidence DOUBLE PRECISION\n);\n\n-- Ingestion metrics\nCREATE TABLE IF NOT EXISTS ingestion_metrics(\n    received_at timestamptz NOT NULL,\n    inserted_at timestamptz NOT NULL\n);\n\n-- Error log\nCREATE TABLE IF NOT EXISTS sensor_errors(\n    time timestamptz DEFAULT NOW(),\n    error_msg text NOT NULL,\n    raw_payload jsonb\n);\n",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -941,7 +941,8 @@
         "y": 420,
         "wires": [
             [
-                "891fbba0ee1f929d"
+                "891fbba0ee1f929d",
+                "ab56472b4d5b43b4"
             ]
         ]
     },
@@ -979,7 +980,7 @@
         "type": "function",
         "z": "csv-upload",
         "name": "Handle multi-file upload",
-        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[`id${i}`]     // grab associated ID from body\n        };\n\n        node.send(fileMsg);\n\n        await new Promise(resolve => setTimeout(resolve, 30000)); \n    }\n}\n\nsendWithDelay();\n\nreturn null; ",
+        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,\n            filename: file.originalname,\n            mimetype: file.mimetype,\n            size: file.size,\n            fieldname: file.fieldname,\n            id: msg.req.body[`id${i}`]\n        };\n\n        node.send(fileMsg);\n\n        await new Promise(resolve => setTimeout(resolve, 30000));\n    }\n\n    msg.payload = { success: true, message: \"All files processed successfully\" };\n    node.send(msg);\n}\n\nsendWithDelay();\n\nreturn null;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1026,6 +1027,17 @@
         ],
         "x": 425,
         "y": 480,
+        "wires": []
+    },
+    {
+        "id": "ab56472b4d5b43b4",
+        "type": "http response",
+        "z": "csv-upload",
+        "name": "Upload Status",
+        "statusCode": "",
+        "headers": {},
+        "x": 320,
+        "y": 540,
         "wires": []
     },
     {
@@ -1268,7 +1280,7 @@
         "type": "postgresql",
         "z": "db-ingestion",
         "name": "Insert detection row",
-        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence) VALUES($1,$2,$3,$4,$5,$6,$7);",
+        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence)\nVALUES($1,$2,$3,$4,$5,$6,$7);\n",
         "postgreSQLConfig": "fbd14997310e037a",
         "split": false,
         "rowsPerMsg": "",
@@ -1340,9 +1352,7 @@
         "type": "catch",
         "z": "db-ingestion",
         "name": "Catch errors",
-        "scope": [
-            "ad0dea488b9e2098"
-        ],
+        "scope": [],
         "uncaught": false,
         "x": 170,
         "y": 500,
@@ -1914,6 +1924,50 @@
         ],
         "x": 615,
         "y": 360,
+        "wires": []
+    },
+    {
+        "id": "ea1617cf1b43ac27",
+        "type": "http in",
+        "z": "admin",
+        "name": "Erase Data from UI",
+        "url": "/erase-data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 520,
+        "wires": [
+            [
+                "b8be57e14d46a8d8"
+            ]
+        ]
+    },
+    {
+        "id": "b8be57e14d46a8d8",
+        "type": "postgresql",
+        "z": "admin",
+        "name": "Truncate",
+        "query": "TRUNCATE sensor_data, ingestion_metrics, sensor_errors RESTART IDENTITY;",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "outputs": 1,
+        "x": 400,
+        "y": 520,
+        "wires": [
+            [
+                "5f4e9accb8dc67d9"
+            ]
+        ]
+    },
+    {
+        "id": "5f4e9accb8dc67d9",
+        "type": "http response",
+        "z": "admin",
+        "name": "Erase Status",
+        "statusCode": "",
+        "headers": {},
+        "x": 670,
+        "y": 520,
         "wires": []
     }
 ]
