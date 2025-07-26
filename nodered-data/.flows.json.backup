@@ -89,9 +89,9 @@
         "applicationNameType": "str",
         "max": "10",
         "maxFieldType": "num",
-        "idle": "1000",
+        "idle": "60000",
         "idleFieldType": "num",
-        "connectionTimeout": "10000",
+        "connectionTimeout": "60000",
         "connectionTimeoutFieldType": "num",
         "user": "postgres",
         "userFieldType": "str",
@@ -980,10 +980,10 @@
         "type": "function",
         "z": "csv-upload",
         "name": "Handle multi-file upload",
-        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,          // raw file data\n            filename: file.originalname,   // original filename\n            mimetype: file.mimetype,       // file type\n            size: file.size,               // file size\n            fieldname: file.fieldname,     // e.g. file0\n            id: msg.req.body[id${ i }]     // grab associated ID from body\n    };\n\n    node.send(fileMsg);\n\n    // Wait 30 seconds before sending next file\n    await new Promise(resolve => setTimeout(resolve, 30000));\n}\n\n// After all files are sent, send original msg for HTTP response\nmsg.payload = { success: true, message: \"All files processed successfully\" };\nnode.send(msg);\n}\n\nsendWithDelay();\n\nreturn null;",
+        "func": "let files = msg.req.files;\n\nasync function sendWithDelay() {\n    for (let i = 0; i < files.length; i++) {\n        let file = files[i];\n\n        let fileMsg = {\n            payload: file.buffer,\n            filename: file.originalname,\n            mimetype: file.mimetype,\n            size: file.size,\n            fieldname: file.fieldname,\n            id: msg.req.body[`id${i}`]\n        };\n\n        node.send(fileMsg);\n\n        await new Promise(resolve => setTimeout(resolve, 60000));\n    }\n\n    msg.payload = { success: true, message: \"All files processed successfully\" };\n    node.send(msg);\n}\n\nsendWithDelay();\n\nreturn null;\n",
         "outputs": 1,
         "timeout": 0,
-        "noerr": 6,
+        "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
@@ -1289,27 +1289,9 @@
         "y": 240,
         "wires": [
             [
-                "0926741538b0917c",
                 "9c7497c7cc3a2c7b"
             ]
         ]
-    },
-    {
-        "id": "0926741538b0917c",
-        "type": "debug",
-        "z": "db-ingestion",
-        "name": "Debug Insert",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 930,
-        "y": 240,
-        "wires": []
     },
     {
         "id": "9c7497c7cc3a2c7b",

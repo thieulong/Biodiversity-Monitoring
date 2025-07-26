@@ -25,7 +25,18 @@
         "menu-menu-item-palette": true,
         "menu-menu-item-sidebar": true,
         "debug": {
-            "clearType": "all"
+            "clearType": "all",
+            "filter": "filterSelected",
+            "filteredNodes": [
+                "debug_create_tables",
+                "debug_drop_tables",
+                "debug_hypertable",
+                "debug_insert_sensors",
+                "debug_done",
+                "debug_api",
+                "debug_post_response",
+                "debug_clear"
+            ]
         }
     }
 }
