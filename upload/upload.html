@@ -18,7 +18,7 @@
             <li>Click on "Browse" to select one or multiple CSV files.</li>
             <li>Assign an ID or description for each file.</li>
             <li>Click <b>Upload All</b> to send data to the database.</li>
-            <li>Each file upload will take <b>30 seconds</b> to process</li>
+            <li>Each file upload will take <b>~30 seconds</b> to process</li>
             <li>Go back and check the Grafana Dashboard.</li>
             <li>Click <b>Erase All</b> to remove all data in the database if needed.</li>
         </ol>
@@ -27,6 +27,8 @@
     <div class="note">
     <strong>Note:</strong> Once you click <b>"Upload All"</b>, it’s recommended to wait ~30 seconds per file to finish uploading. Then in Grafana Dashboard, set the timeframe to <b>"Last 2 years"</b> and click <b>"Refresh"</b> to load your data.
     </div>
+
+    <p id="rowCount" class="row-count"><strong>Total rows uploaded:</strong> <span id="rowNumber">0</span></p>
 
     <div id="dropZone" class="drop-zone">
       <p>Drag & drop CSV files here or <span>click to browse</span></p>

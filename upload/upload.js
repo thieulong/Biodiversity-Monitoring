@@ -48,13 +48,15 @@ uploadBtn.addEventListener('click', async () => {
     });
 
     try {
-        const res = await fetch('http://localhost:1880/upload-files', {
+        const res = await fetch('http://localhost:3880/upload-files', {
             method: 'POST',
             body: formData
         });
-        status.textContent = res.ok ? 'Files uploaded successfully!' : 'Upload failed.';
-        status.className = res.ok ? 'success' : 'error';
-        status.style.display = 'block';
+
+        showStatus(res.ok ? 'Files uploaded successfully!' : 'Upload failed.', res.ok ? 'success' : 'error');
+
+        fetchRowCount();
+
     } catch (err) {
         status.textContent = 'Error: ' + err.message;
         status.className = 'error';
@@ -68,15 +70,14 @@ eraseBtn.addEventListener('click', async () => {
     }
 
     try {
-        const res = await fetch('http://localhost:1880/erase-data', {
+        const res = await fetch('http://localhost:3880/erase-data', {
             method: 'POST'
         });
         if (res.ok) {
-            status.textContent = 'All data has been erased.';
-            status.className = 'success'; // Green bar
+            showStatus('All data has been erased.', 'success');
+            fetchRowCount();
         } else {
-            status.textContent = 'Failed to erase data.';
-            status.className = 'error'; // Yellow bar
+            showStatus('Failed to erase data.', 'error');
         }
     } catch (err) {
         status.textContent = 'Error: ' + err.message;
@@ -122,3 +123,25 @@ dropZone.addEventListener('drop', (e) => {
     fileInput.files = e.dataTransfer.files;
     fileInput.dispatchEvent(new Event('change')); // Trigger existing file handling
 });
+
+async function fetchRowCount() {
+  try {
+    const res = await fetch('http://localhost:3880/row-count');
+    const data = await res.json();
+    const countElem = document.getElementById('rowCount');
+
+    // Fix: access the nested rowsUploaded value
+    const count = data.rowsUploaded?.rowsUploaded || "0";
+
+    if (countElem) {
+      countElem.innerHTML = `<strong>Total rows uploaded:</strong> ${count}`;
+    }
+  } catch (err) {
+    console.error('Error fetching row count:', err);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', fetchRowCount);
+
+// Also update row count every 10 seconds
+setInterval(fetchRowCount, 10000);

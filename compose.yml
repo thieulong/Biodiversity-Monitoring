@@ -29,7 +29,7 @@ services:
   nodered:
     image: nodered/node-red
     ports:
-      - "1880:1880"
+      - "3880:1880"
     restart: unless-stopped
     volumes:
       - "./nodered-data:/data"
