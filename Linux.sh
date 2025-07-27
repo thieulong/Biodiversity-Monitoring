@@ -1,7 +1,5 @@
 #!/bin/bash
-echo "==============================="
-echo "  BIODIVERSITY DASHBOARD SETUP"
-echo "==============================="
+echo "BIODIVERSITY DASHBOARD SETUP"
 echo ""
 
 # Check for Docker

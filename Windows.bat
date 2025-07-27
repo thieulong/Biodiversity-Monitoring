@@ -1,7 +1,5 @@
 @echo off
-echo ================================
-echo   BIODIVERSITY DASHBOARD SETUP
-echo ================================
+echo BIODIVERSITY DASHBOARD SETUP
 echo.
 
 REM Check if Docker Desktop is running
