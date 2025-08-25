@@ -15,18 +15,18 @@
         "env": []
     },
     {
-        "id": "mqtt-input",
-        "type": "tab",
-        "label": "MQTT Input",
-        "disabled": false,
-        "info": ""
-    },
-    {
         "id": "db-ingestion",
         "type": "tab",
         "label": "DB Ingestion",
         "disabled": false,
         "info": "DB ingestion pipeline with metrics"
+    },
+    {
+        "id": "mqtt-input",
+        "type": "tab",
+        "label": "MQTT Input",
+        "disabled": false,
+        "info": ""
     },
     {
         "id": "api",
@@ -1169,10 +1169,10 @@
                 "vt": "str"
             }
         ],
-        "repeat": "2",
+        "repeat": "5",
         "crontab": "",
         "once": true,
-        "onceDelay": "2",
+        "onceDelay": "5",
         "topic": "",
         "payload": "",
         "payloadType": "date",
@@ -1218,6 +1218,220 @@
         "y": 660,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "d12283e84cd705c9",
+        "type": "comment",
+        "z": "db-ingestion",
+        "name": "Link In Ingestion Pipeline",
+        "info": "Unified ingestion path for:\n- MQTT ingestion, \n- CSV batch upload,  \n- HTTP POST requests",
+        "x": 170,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "ad0dea488b9e2098",
+        "type": "function",
+        "z": "db-ingestion",
+        "name": "Normalize detection",
+        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length === 8 && timeStr.length === 6) {\n    const [y, M, d, h, m, s] = [\n      dateStr.slice(0, 4),\n      dateStr.slice(4, 6),\n      dateStr.slice(6, 8),\n      timeStr.slice(0, 2),\n      timeStr.slice(2, 4),\n      timeStr.slice(4, 6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers\nconst rec = {\n  time:            timeVal,\n  sensor_id:       String(msg.id || row.sensor_id || row.sensorId || \"unknown\"), \n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence) || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id, // string-safe now\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 120,
+        "wires": [
+            [
+                "33b735ca82244c85"
+            ]
+        ]
+    },
+    {
+        "id": "4c4415142a097a2a",
+        "type": "function",
+        "z": "db-ingestion",
+        "name": "Stamp received_at",
+        "func": "msg.received_at=new Date().toISOString(); return msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 240,
+        "wires": [
+            [
+                "4defb9ee116ee672"
+            ]
+        ]
+    },
+    {
+        "id": "4defb9ee116ee672",
+        "type": "postgresql",
+        "z": "db-ingestion",
+        "name": "Insert detection row",
+        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence)\nVALUES($1,$2,$3,$4,$5,$6,$7);\n",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 670,
+        "y": 240,
+        "wires": [
+            [
+                "9c7497c7cc3a2c7b"
+            ]
+        ]
+    },
+    {
+        "id": "9c7497c7cc3a2c7b",
+        "type": "function",
+        "z": "db-ingestion",
+        "name": "Prepare latency params",
+        "func": "msg.params = [ msg.received_at ]; return msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 380,
+        "wires": [
+            [
+                "87a7dea47f518afe"
+            ]
+        ]
+    },
+    {
+        "id": "87a7dea47f518afe",
+        "type": "postgresql",
+        "z": "db-ingestion",
+        "name": "Log ingestion latency",
+        "query": "INSERT INTO ingestion_metrics(received_at, inserted_at) VALUES($1, NOW());",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 660,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f4831e1612650e6d",
+        "type": "catch",
+        "z": "db-ingestion",
+        "name": "Catch errors",
+        "scope": [],
+        "uncaught": false,
+        "x": 170,
+        "y": 500,
+        "wires": [
+            [
+                "90966bc9719a08dd"
+            ]
+        ]
+    },
+    {
+        "id": "90966bc9719a08dd",
+        "type": "function",
+        "z": "db-ingestion",
+        "name": "Format error",
+        "func": "msg.error_msg = msg.error.message || String(msg.error);\nmsg.raw_payload = JSON.stringify(msg.payload || {});\nreturn msg",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 500,
+        "wires": [
+            [
+                "2ba0df6ab4980da8"
+            ]
+        ]
+    },
+    {
+        "id": "2ba0df6ab4980da8",
+        "type": "postgresql",
+        "z": "db-ingestion",
+        "name": "Log sensor_error",
+        "query": "INSERT INTO sensor_errors(time,error_msg,raw_payload) VALUES(NOW(), msg.error_msg, msg.raw_payload);",
+        "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
+        "outputs": 1,
+        "x": 650,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "af1f1c097dd12835",
+        "type": "link in",
+        "z": "db-ingestion",
+        "name": "FROM Uploads",
+        "links": [
+            "linkOutMqtt",
+            "96d0299c874c7765",
+            "linkOutHttp"
+        ],
+        "x": 185,
+        "y": 120,
+        "wires": [
+            [
+                "ad0dea488b9e2098"
+            ]
+        ]
+    },
+    {
+        "id": "3f20fe7b79ffd7b9",
+        "type": "link in",
+        "z": "db-ingestion",
+        "name": "link in 4",
+        "links": [
+            "5940e71d30f34d95"
+        ],
+        "x": 185,
+        "y": 180,
+        "wires": [
+            [
+                "ad0dea488b9e2098"
+            ]
+        ]
+    },
+    {
+        "id": "33b735ca82244c85",
+        "type": "delay",
+        "z": "db-ingestion",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "200",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 660,
+        "y": 120,
+        "wires": [
+            [
+                "4c4415142a097a2a"
+            ]
         ]
     },
     {
@@ -1404,195 +1618,6 @@
         "x": 600,
         "y": 360,
         "wires": []
-    },
-    {
-        "id": "d12283e84cd705c9",
-        "type": "comment",
-        "z": "db-ingestion",
-        "name": "Link In Ingestion Pipeline",
-        "info": "Unified ingestion path for:\n- MQTT ingestion, \n- CSV batch upload,  \n- HTTP POST requests",
-        "x": 170,
-        "y": 60,
-        "wires": []
-    },
-    {
-        "id": "ad0dea488b9e2098",
-        "type": "function",
-        "z": "db-ingestion",
-        "name": "Normalize detection",
-        "func": "// Normalise detection: \n// extract timestamp from CSV file path, \n// or take row.time if present, \n// or now if real time ingestion\nconst row = msg.payload;\nlet timeVal;\n\n// CSV-style filename: /…/YYYYMMDD_HHMMSS.wav\nif (row.File) {\n  const parts = row.File.split(/[_\\/\\\\]/),\n        dateStr = parts[parts.length - 2] || \"\",\n        timeStr = (parts[parts.length - 1] || \"\").replace(/\\.wav$/i, \"\");\n  if (dateStr.length === 8 && timeStr.length === 6) {\n    const [y, M, d, h, m, s] = [\n      dateStr.slice(0, 4),\n      dateStr.slice(4, 6),\n      dateStr.slice(6, 8),\n      timeStr.slice(0, 2),\n      timeStr.slice(2, 4),\n      timeStr.slice(4, 6)\n    ];\n    timeVal = `${y}-${M}-${d}T${h}:${m}:${s}Z`;\n  }\n}\n\n// JSON/MQTT style:\nif (!timeVal && (row.time || row.Time || row.timestamp)) {\n  timeVal = row.time || row.Time || row.timestamp;\n}\n\n// Fallback:\nif (!timeVal) timeVal = new Date().toISOString();\n\n// Pull the rest of the fields\n// allows for both snake_case and Title Case headers\nconst rec = {\n  time:            timeVal,\n  sensor_id:       String(msg.id || row.sensor_id || row.sensorId || \"unknown\"), \n  start_seconds:   parseInt(row.start_seconds || row[\"Start (s)\"] || 0),\n  end_seconds:     parseInt(row.end_seconds   || row[\"End (s)\"]   || 0),\n  scientific_name: row.scientific_name || row[\"Scientific name\"] || \"\",\n  common_name:     row.common_name     || row[\"Common name\"]     || \"\",\n  confidence:      parseFloat(row.confidence || row.Confidence) || 0\n};\n\nmsg.params = [\n  rec.time,\n  rec.sensor_id, // string-safe now\n  rec.start_seconds,\n  rec.end_seconds,\n  rec.scientific_name,\n  rec.common_name,\n  rec.confidence\n];\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 400,
-        "y": 120,
-        "wires": [
-            [
-                "4c4415142a097a2a"
-            ]
-        ]
-    },
-    {
-        "id": "4c4415142a097a2a",
-        "type": "function",
-        "z": "db-ingestion",
-        "name": "Stamp received_at",
-        "func": "msg.received_at=new Date().toISOString(); return msg;",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 390,
-        "y": 240,
-        "wires": [
-            [
-                "4defb9ee116ee672"
-            ]
-        ]
-    },
-    {
-        "id": "4defb9ee116ee672",
-        "type": "postgresql",
-        "z": "db-ingestion",
-        "name": "Insert detection row",
-        "query": "INSERT INTO sensor_data(time,sensor_id,start_seconds,end_seconds,scientific_name,common_name,confidence)\nVALUES($1,$2,$3,$4,$5,$6,$7);\n",
-        "postgreSQLConfig": "fbd14997310e037a",
-        "split": false,
-        "rowsPerMsg": "",
-        "outputs": 1,
-        "x": 660,
-        "y": 240,
-        "wires": [
-            [
-                "9c7497c7cc3a2c7b"
-            ]
-        ]
-    },
-    {
-        "id": "9c7497c7cc3a2c7b",
-        "type": "function",
-        "z": "db-ingestion",
-        "name": "Prepare latency params",
-        "func": "msg.params = [ msg.received_at ]; return msg;",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 410,
-        "y": 380,
-        "wires": [
-            [
-                "87a7dea47f518afe"
-            ]
-        ]
-    },
-    {
-        "id": "87a7dea47f518afe",
-        "type": "postgresql",
-        "z": "db-ingestion",
-        "name": "Log ingestion latency",
-        "query": "INSERT INTO ingestion_metrics(received_at, inserted_at) VALUES($1, NOW());",
-        "postgreSQLConfig": "fbd14997310e037a",
-        "split": false,
-        "rowsPerMsg": "",
-        "outputs": 1,
-        "x": 660,
-        "y": 380,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "f4831e1612650e6d",
-        "type": "catch",
-        "z": "db-ingestion",
-        "name": "Catch errors",
-        "scope": [],
-        "uncaught": false,
-        "x": 170,
-        "y": 500,
-        "wires": [
-            [
-                "90966bc9719a08dd"
-            ]
-        ]
-    },
-    {
-        "id": "90966bc9719a08dd",
-        "type": "function",
-        "z": "db-ingestion",
-        "name": "Format error",
-        "func": "msg.error_msg = msg.error.message || String(msg.error);\nmsg.raw_payload = JSON.stringify(msg.payload || {});\nreturn msg",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 370,
-        "y": 500,
-        "wires": [
-            [
-                "2ba0df6ab4980da8"
-            ]
-        ]
-    },
-    {
-        "id": "2ba0df6ab4980da8",
-        "type": "postgresql",
-        "z": "db-ingestion",
-        "name": "Log sensor_error",
-        "query": "INSERT INTO sensor_errors(time,error_msg,raw_payload) VALUES(NOW(), msg.error_msg, msg.raw_payload);",
-        "postgreSQLConfig": "fbd14997310e037a",
-        "split": false,
-        "rowsPerMsg": "",
-        "outputs": 1,
-        "x": 650,
-        "y": 500,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "af1f1c097dd12835",
-        "type": "link in",
-        "z": "db-ingestion",
-        "name": "FROM Uploads",
-        "links": [
-            "linkOutMqtt",
-            "96d0299c874c7765",
-            "linkOutHttp"
-        ],
-        "x": 185,
-        "y": 120,
-        "wires": [
-            [
-                "ad0dea488b9e2098"
-            ]
-        ]
-    },
-    {
-        "id": "3f20fe7b79ffd7b9",
-        "type": "link in",
-        "z": "db-ingestion",
-        "name": "link in 4",
-        "links": [
-            "5940e71d30f34d95"
-        ],
-        "x": 185,
-        "y": 180,
-        "wires": [
-            [
-                "ad0dea488b9e2098"
-            ]
-        ]
     },
     {
         "id": "comment_api",
@@ -2113,6 +2138,8 @@
         "name": "Truncate",
         "query": "TRUNCATE sensor_data, ingestion_metrics, sensor_errors RESTART IDENTITY;",
         "postgreSQLConfig": "fbd14997310e037a",
+        "split": false,
+        "rowsPerMsg": "",
         "outputs": 1,
         "x": 400,
         "y": 520,

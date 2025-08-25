@@ -723,24 +723,5 @@
                 "file": "/data/node_modules/node-red-dashboard/nodes/ui_spacer.js"
             }
         }
-    },
-    "node-red-contrib-multipart-stream-decoder": {
-        "name": "node-red-contrib-multipart-stream-decoder",
-        "version": "1.0.0",
-        "local": true,
-        "user": true,
-        "nodes": {
-            "multipart-decoder": {
-                "name": "multipart-decoder",
-                "types": [
-                    "multipart-decoder"
-                ],
-                "enabled": true,
-                "local": true,
-                "user": false,
-                "module": "node-red-contrib-multipart-stream-decoder",
-                "file": "/data/node_modules/node-red-contrib-multipart-stream-decoder/multipart_decoder.js"
-            }
-        }
     }
 }

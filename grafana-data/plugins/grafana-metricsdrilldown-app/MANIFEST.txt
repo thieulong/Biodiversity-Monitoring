@@ -7,43 +7,49 @@ Hash: SHA512
   "signedByOrg": "grafana",
   "signedByOrgName": "Grafana Labs",
   "plugin": "grafana-metricsdrilldown-app",
-  "version": "1.0.7",
-  "time": 1753194570200,
+  "version": "1.0.11",
+  "time": 1755717313640,
   "keyId": "7e4d0c6a708866e7",
   "files": {
-    "plugin.json": "8bb273c3411278260a3e4a83c0d4b01b13f8446b56d768c3a18554aa7cb096d3",
-    "384.js": "fd98d80c83126ba3fd18d1d94d5fd40f1ee3bbd23b24340497a6dab6e44899aa",
-    "img/breakdown.png": "3a3f840dbdad176301dc803a6a3654f48e1d63659b1697c19c4b56cf1e21f6fd",
-    "img/metrics-drilldown.png": "eef0ace68ed328773f9dddfd9f8b14c22c3e2f909aeab640263112251afca7f7",
-    "img/logo.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
-    "601.js": "1baeb7db2299b970969d5f2fe32171ad138c65b4125aba4bc6a5237c215f8456",
-    "module.js.map": "27633c937b329abd297dc999f153f153fb4e2006ffe1bcb0d375b5a690db9018",
-    "5e493d758066ba82f810.wasm": "d677c9dd9edef48b486ed981625e1164bc27580c82c4601acad60a9c1a7e169d",
-    "README.md": "6e2a2da6bf18c2e28d0e6121db52cd8832c5047fba1ea6f5aa80b1c78582f94d",
-    "module.js": "e3a2498122cb8285c6ef319b904f5d8104147e1d75f287f87f11ebb410b84ac3",
-    "944.js": "395648de0489bb1a2e7689394bfb2fae29a6341f10e396c27677bdaf8233862c",
-    "ac01ecbc64128d2f3e68.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
-    "166.js.map": "8e5698b5c95e4fc63a532a5359b2a54d4437dc9b93ce898f822eeb827c632b48",
-    "CHANGELOG.md": "de374cb1d729571917c701bf6a2d754cd1df9fc609db29320e3a50b31cdf90e8",
-    "166.js": "f6230f7397a523d28d87a73675242645cbf3048c227711734d826eaffa0deb1e",
-    "601.js.map": "3bf102ff7f24287e9f8364a31d9405a00d2de1f170728d7f2ea051ea10c66272",
-    "78.js.map": "c42c5d0bb7f9c718b5b006bf221ea7e7c7aba234587e9f548b0cdfced2349c20",
-    "384.js.map": "31bdb5486b3e1e64738c876c3bc65c9d58f5dae4f63f33b567053c3a435ce840",
-    "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "767.js.map": "a1dd37193cefe0836b37508f80ab325f91984335c972ee5f99e9c6b9299231e1",
+    "351.js.map": "c6379ec421957bb9fd7230f41ec08d4a93d113c3cf0c9d3d7f24a8cdff18fbae",
+    "CHANGELOG.md": "3c6fd554c52b57456422a21684896b003b86513867290c4db28739577a180118",
     "944.js.map": "e62a80d97baaa4fc0cc7d805247f37857044c6515e05bf6ca0c31f8a99405b32",
-    "166.js.LICENSE.txt": "9e0cb6b0d82ee46be39b054a3f76419242945d9dbfced78bca42fd65c082e71a",
-    "78.js": "625609d1d600cfb5c261b5bf199a06c30805be3dc90517efbc0b2c248110532e",
+    "792.js.map": "a02faaeddec87b172f010e2648b0964a2cf7e692700efa7efd833c4244fee112",
+    "792.js": "9fd8254af528b25aafe2d839dedf78a479db2eb4d4f80679ad09bcf13775b362",
     "767.js": "4396e4489dffd33b5354868fa38baddd3be961acd945b1b9979c7461c85ee2e8",
-    "767.js.map": "a1dd37193cefe0836b37508f80ab325f91984335c972ee5f99e9c6b9299231e1"
+    "140.js.map": "4a1289e0aee88bddfc2491ce9101324a07601fad7101d009870e92477b394637",
+    "351.js": "be6b258281bb99a3d2feaf3015c60e7f5df7878fcb29d4f14f19df1c3b7a875d",
+    "README.md": "6e2a2da6bf18c2e28d0e6121db52cd8832c5047fba1ea6f5aa80b1c78582f94d",
+    "619.js": "3d11e965c645a48d741366a530834318366381d5f0423ebe0fb162877fd86d1d",
+    "138.js.map": "cc3ea82afff4e24fe1ec6b82e2c76321b532dbeb0bc4943407abc114d6e6ea80",
+    "module.js.map": "1fbe18c5565164ca493824bc53e3b1c08672c934acd2b341ab822acf2226fb2c",
+    "619.js.map": "bfa01906e0c63da9fc14226c159faef9dd6a4dc082e473997327c3c940fba1ef",
+    "836.js": "1e81279c63027d8912ada7fabfbfc37c4d73b17ec9aa973d2eda312980d5063c",
+    "5e493d758066ba82f810.wasm": "d677c9dd9edef48b486ed981625e1164bc27580c82c4601acad60a9c1a7e169d",
+    "ac01ecbc64128d2f3e68.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
+    "944.js": "395648de0489bb1a2e7689394bfb2fae29a6341f10e396c27677bdaf8233862c",
+    "138.js.LICENSE.txt": "9e0cb6b0d82ee46be39b054a3f76419242945d9dbfced78bca42fd65c082e71a",
+    "module.js": "4c6fe038125c5601365af1f4a123c9f55a8d4deac5f991537d068784e3d0ea1d",
+    "plugin.json": "729477722f077d6301bcd686f094b26ebf94cec3766deb9d1f0696eaed350b02",
+    "img/metrics-drilldown.png": "eef0ace68ed328773f9dddfd9f8b14c22c3e2f909aeab640263112251afca7f7",
+    "img/breakdown.png": "3a3f840dbdad176301dc803a6a3654f48e1d63659b1697c19c4b56cf1e21f6fd",
+    "img/logo.svg": "9b1173977eee0f4b15219db78fe6e9f7e870bb47bcfd300312f35bf51bccf9f6",
+    "836.js.map": "e7f536c033fcf1981400983dc389f32e186c07f1c7886af0728e396be593c35b",
+    "78.js": "08273a5e9f5280e565bc3a929316c8ad44444346c37d461f06ec4d582fe60f3c",
+    "138.js": "57b80f337d2135d85ff3f2bad7cabcb5ef28bb50d48aaef9dad90ae844f6a2b9",
+    "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "140.js": "f058b1c52e2b2ea8862b262521c19035c2f4beab0fdd30c59d86496291d1767b",
+    "78.js.map": "d08b2a56c2595c0793b2b2909650b320a1548374aa058ffc53ce46d6954b9143"
   }
 }
 -----BEGIN PGP SIGNATURE-----
 
-wsA+BAETCgBtBYJof6BKCZB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
-aW9ucy5vcGVucGdwanMub3JnszkH8bGoqXVRSsFRmmcJLMFluEflkgHYVUDS
-FDL72dAWIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAN4sCBRYxqi2B00pY4GTU
-yZ7G7mxo9hh+WeOcW0u+MgaNcEiOIbrp9q4C6IoU+c/sgM7Wb6Nfg8q/yRVq
-1d/flbYoibIdAgkBfJc5HSM+/MhJfpYNfmEKMHW9pm/A/zoC5U/+m0htS+ld
-S9DXZpsHZGuI6ZRTHHn8UgWUT62hqOyFiNMZM0+5ivs=
-=9wCh
+wsA9BAETCgBtBYJoph7BCZB+TQxqcIhm50UUAAAAAAAcACBzYWx0QG5vdGF0
+aW9ucy5vcGVucGdwanMub3JntFheoEiMnlncJ03X9NWfYd24mWYJDZIBDycN
+wedJjd4WIQTzOyW2kQdOhGNlcPN+TQxqcIhm5wAAQP0CBjuA0ZromN6NzytP
+FPiJV45R0Janp6JIWJaxaX/Taa975wkJjYjf8SuzyR1ZbQjLaJbk4wQnnHdy
+8NQJDVWrTvuYAgjZLHQJrvDRYt083urW6Q9xZCn4XnfgSvjG4vtDqBDYeeXa
+DgtsgNcgaqE1sUdPh1fgTX5qCT9q359+gYYNLhA9Eg==
+=KP/n
 -----END PGP SIGNATURE-----

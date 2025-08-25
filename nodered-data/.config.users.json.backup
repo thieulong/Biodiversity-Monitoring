@@ -10,7 +10,8 @@
                 "view-node-status": true,
                 "view-node-show-label": true,
                 "view-show-tips": false,
-                "view-show-welcome-tours": true
+                "view-show-welcome-tours": true,
+                "view-node-info-icon": true
             },
             "tours": {
                 "welcome": "4.0.9"
@@ -26,7 +27,17 @@
         "menu-menu-item-sidebar": true,
         "debug": {
             "clearType": "all",
-            "filter": "filterSelected"
+            "filter": "filterSelected",
+            "filteredNodes": [
+                "debug_create_tables",
+                "debug_drop_tables",
+                "debug_hypertable",
+                "debug_insert_sensors",
+                "debug_done",
+                "debug_api",
+                "debug_post_response",
+                "debug_clear"
+            ]
         }
     }
 }
