@@ -144,4 +144,4 @@ async function fetchRowCount() {
 window.addEventListener('DOMContentLoaded', fetchRowCount);
 
 // Also update row count every 10 seconds
-setInterval(fetchRowCount, 10000);
+setInterval(fetchRowCount, 5000);
