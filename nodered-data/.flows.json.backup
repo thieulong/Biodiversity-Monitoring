@@ -1257,7 +1257,7 @@
         "type": "function",
         "z": "db-ingestion",
         "name": "Stamp received_at",
-        "func": "msg.received_at=new Date().toISOString(); return msg;",
+        "func": "const now = new Date().toISOString();\nmsg.received_at = now;\n\nif (!Array.isArray(msg.params)) msg.params = [];\nmsg.params[0] = now;\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1333,7 +1333,7 @@
         "name": "Catch errors",
         "scope": [],
         "uncaught": false,
-        "x": 170,
+        "x": 230,
         "y": 500,
         "wires": [
             [
@@ -1353,7 +1353,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 370,
+        "x": 430,
         "y": 500,
         "wires": [
             [
