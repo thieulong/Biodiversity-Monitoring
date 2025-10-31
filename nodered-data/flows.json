@@ -1257,7 +1257,7 @@
         "type": "function",
         "z": "db-ingestion",
         "name": "Stamp received_at",
-        "func": "const now = new Date().toISOString();\nmsg.received_at = now;\n\nif (!Array.isArray(msg.params)) msg.params = [];\nmsg.params[0] = now;\n\nreturn msg;\n",
+        "func": "// const now = new Date().toISOString();\n// msg.received_at = now;\n\n// if (!Array.isArray(msg.params)) msg.params = [];\n// msg.params[0] = now;\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
